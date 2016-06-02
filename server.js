@@ -49320,6 +49320,10 @@
 
 	var _UserComponent2 = _interopRequireDefault(_UserComponent);
 
+	var _ArtistComponent = __webpack_require__(338);
+
+	var _ArtistComponent2 = _interopRequireDefault(_ArtistComponent);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var mainroute = function mainroute(history) {
@@ -49331,7 +49335,7 @@
 				_reactRouter.Route,
 				{ path: "/", component: _MainComponent2.default },
 				_react2.default.createElement(_reactRouter.IndexRoute, { component: _UserComponent2.default }),
-				_react2.default.createElement(_reactRouter.Route, { path: "/albums", component: _UserComponent2.default }),
+				_react2.default.createElement(_reactRouter.Route, { path: "/artists", component: _ArtistComponent2.default }),
 				_react2.default.createElement(_reactRouter.Route, { path: "/stream", component: _UserComponent2.default })
 			)
 		);
@@ -49359,8 +49363,6 @@
 
 	var _reactRedux = __webpack_require__(308);
 
-	var _actions = __webpack_require__(328);
-
 	var _Store = __webpack_require__(329);
 
 	var _Store2 = _interopRequireDefault(_Store);
@@ -49385,7 +49387,6 @@
 
 			var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(MainComponent).call(this, props));
 
-			_Store2.default.dispatch((0, _actions.getStats)('glennwedin'));
 			_this.state = {
 				loading: _Store2.default.getState().stats.isFetching
 			};
@@ -50962,6 +50963,7 @@
 			value: true
 	});
 	exports.getStats = getStats;
+	exports.getTopArtists = getTopArtists;
 	var REQUEST_STATS = exports.REQUEST_STATS = 'REQUEST_STATS';
 	function requestStats(user) {
 			return {
@@ -51010,6 +51012,41 @@
 									recenttracks: values[2].recenttracks
 							};
 							dispatch(receiveStats(user, data));
+					});
+			};
+	}
+
+	/*
+	*	Fetch top artists with pagination
+	*/
+
+	var REQUEST_TOP_ARTISTS = exports.REQUEST_TOP_ARTISTS = 'REQUEST_TOP_ARTISTS';
+	function requestTopArtists(user) {
+			return {
+					type: REQUEST_TOP_ARTISTS,
+					user: user
+			};
+	}
+
+	var RECEIVE_TOP_ARTISTS = exports.RECEIVE_TOP_ARTISTS = 'RECEIVE_TOP_ARTISTS';
+	function receiveTopArtists(user, json) {
+			return {
+					type: RECEIVE_TOP_ARTISTS,
+					user: user,
+					artiststats: json,
+					receivedAt: Date.now()
+			};
+	}
+
+	function getTopArtists(user, count, page) {
+			return function (dispatch) {
+					dispatch(requestTopArtists(user));
+					return fetch('http://ws.audioscrobbler.com/2.0/?method=user.gettopartists&user=' + user + '&limit=' + count + '&page=' + page + '&api_key=484711f72a2c24bf969ab0e30abe3d6a&format=json').then(function (response) {
+							return response.json();
+					}).then(function (json) {
+							dispatch(receiveTopArtists(user, json.topartists));
+					}).catch(function (err) {
+							console.log(err);
 					});
 			};
 	}
@@ -51337,7 +51374,8 @@
 		var state = arguments.length <= 0 || arguments[0] === undefined ? {
 			isFetching: false,
 			didInvalidate: false,
-			userstats: []
+			userstats: [],
+			topartiststats: []
 		} : arguments[0];
 		var action = arguments[1];
 
@@ -51348,11 +51386,22 @@
 					didInvalidate: false
 				});
 			case _actions.RECEIVE_STATS:
-				console.log(action);
 				return Object.assign({}, state, {
 					isFetching: false,
 					didInvalidate: false,
 					userstats: action.userstats,
+					lastUpdated: action.receivedAt
+				});
+			case _actions.REQUEST_TOP_ARTISTS:
+				return Object.assign({}, state, {
+					isFetching: true,
+					didInvalidate: false
+				});
+			case _actions.RECEIVE_TOP_ARTISTS:
+				return Object.assign({}, state, {
+					isFetching: false,
+					didInvalidate: false,
+					topartiststats: action.artiststats,
 					lastUpdated: action.receivedAt
 				});
 			default:
@@ -51452,9 +51501,7 @@
 
 	var _UserStats2 = _interopRequireDefault(_UserStats);
 
-	var _AlbumStats = __webpack_require__(336);
-
-	var _AlbumStats2 = _interopRequireDefault(_AlbumStats);
+	var _actions = __webpack_require__(328);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -51474,6 +51521,11 @@
 		}
 
 		_createClass(UserComponent, [{
+			key: 'componentDidMount',
+			value: function componentDidMount() {
+				this.props.dispatch((0, _actions.getStats)('glennwedin'));
+			}
+		}, {
 			key: 'render',
 			value: function render() {
 				return _react2.default.createElement(
@@ -51481,14 +51533,22 @@
 					{ className: 'row' },
 					_react2.default.createElement(
 						'div',
-						{ className: 'small-12 columns' },
+						{ className: 'small-12 medium-4 columns' },
 						_react2.default.createElement(
 							'h1',
 							null,
 							'My top tracks'
 						),
-						_react2.default.createElement(_UserStats2.default, null),
-						_react2.default.createElement(_AlbumStats2.default, null)
+						_react2.default.createElement(_UserStats2.default, null)
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'small-12 medium-4 columns' },
+						_react2.default.createElement(
+							'h1',
+							null,
+							'Userfeed'
+						)
 					)
 				);
 			}
@@ -51621,7 +51681,92 @@
 	exports.default = UserStats;
 
 /***/ },
-/* 336 */
+/* 336 */,
+/* 337 */,
+/* 338 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(82);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactRedux = __webpack_require__(308);
+
+	var _ArtistStats = __webpack_require__(339);
+
+	var _ArtistStats2 = _interopRequireDefault(_ArtistStats);
+
+	var _actions = __webpack_require__(328);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var ArtistComponent = function (_React$Component) {
+		_inherits(ArtistComponent, _React$Component);
+
+		function ArtistComponent(props) {
+			_classCallCheck(this, ArtistComponent);
+
+			return _possibleConstructorReturn(this, Object.getPrototypeOf(ArtistComponent).call(this, props));
+		}
+
+		_createClass(ArtistComponent, [{
+			key: 'componentDidMount',
+			value: function componentDidMount() {
+				var page = 1;
+				if (this.props.location.query.page) {
+					page = this.props.location.query.page;
+				}
+
+				this.props.dispatch((0, _actions.getTopArtists)('draugon', 24, page));
+			}
+		}, {
+			key: 'render',
+			value: function render() {
+				var page = 1;
+				if (this.props.location.query.page) {
+					page = this.props.location.query.page;
+				}
+				return _react2.default.createElement(
+					'section',
+					{ className: 'row' },
+					_react2.default.createElement(
+						'div',
+						{ className: 'small-12 columns' },
+						_react2.default.createElement(
+							'h1',
+							null,
+							'My artists'
+						),
+						_react2.default.createElement(_ArtistStats2.default, { page: page })
+					)
+				);
+			}
+		}]);
+
+		return ArtistComponent;
+	}(_react2.default.Component);
+
+	ArtistComponent = (0, _reactRedux.connect)(function (state) {
+		return state;
+	})(ArtistComponent);
+	exports.default = ArtistComponent;
+
+/***/ },
+/* 339 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -51646,32 +51791,157 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var AlbumStats = function (_React$Component) {
-		_inherits(AlbumStats, _React$Component);
+	var ArtistStats = function (_React$Component) {
+		_inherits(ArtistStats, _React$Component);
 
-		function AlbumStats() {
-			_classCallCheck(this, AlbumStats);
+		function ArtistStats(props) {
+			_classCallCheck(this, ArtistStats);
 
-			return _possibleConstructorReturn(this, Object.getPrototypeOf(AlbumStats).apply(this, arguments));
+			var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ArtistStats).call(this, props));
+
+			_this.state = {
+				page: props.page
+			};
+			return _this;
 		}
 
-		_createClass(AlbumStats, [{
+		_createClass(ArtistStats, [{
 			key: 'componentDidMount',
 			value: function componentDidMount() {}
 		}, {
+			key: 'setPage',
+			value: function setPage() {}
+		}, {
+			key: 'pagination',
+			value: function pagination() {
+				if (this.props.stats.topartiststats.artist) {
+					var totalPages = this.props.stats.topartiststats['@attr'].totalPages;
+
+					var first = [],
+					    middle = [],
+					    last = [];
+
+					for (var x = 1; x <= 5; x++) {
+						first.push(_react2.default.createElement(
+							'div',
+							{ className: 'p' },
+							x
+						));
+					}
+					for (var _x = totalPages / 2 - 5; _x < totalPages / 2; _x++) {
+						middle.push(_react2.default.createElement(
+							'div',
+							{ className: 'p' },
+							_x
+						));
+					}
+					for (var _x2 = totalPages - 5; _x2 < totalPages; _x2++) {
+						last.push(_react2.default.createElement(
+							'div',
+							{ className: 'p' },
+							_x2
+						));
+					}
+
+					return _react2.default.createElement(
+						'div',
+						{ className: 'pagination' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'pagination-section' },
+							_react2.default.createElement(
+								'div',
+								{ className: 'p' },
+								'Previous'
+							)
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'pagination-section' },
+							first
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'pagination-section pagination-separator' },
+							' - - -'
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'pagination-section' },
+							middle
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'pagination-section pagination-separator' },
+							' - - -'
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'pagination-section' },
+							last
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'pagination-section' },
+							_react2.default.createElement(
+								'div',
+								{ className: 'p' },
+								'Next'
+							)
+						)
+					);
+				} else {
+					return _react2.default.createElement('div', null);
+				}
+			}
+		}, {
 			key: 'render',
 			value: function render() {
-				return _react2.default.createElement('div', null);
+				var artistGrid = "";
+				if (this.props.stats.topartiststats.artist) {
+					artistGrid = this.props.stats.topartiststats.artist.map(function (a, i) {
+						console.log(a);
+						return _react2.default.createElement(
+							'div',
+							{ className: 'column artist-grid-item', style: { backgroundImage: 'url(' + a.image[2]['#text'] + ')' }, key: i },
+							_react2.default.createElement(
+								'div',
+								{ className: 'title' },
+								a.name
+							),
+							_react2.default.createElement(
+								'div',
+								{ className: 'playcount' },
+								a.playcount
+							)
+						);
+					});
+				}
+
+				return _react2.default.createElement(
+					'div',
+					null,
+					_react2.default.createElement(
+						'div',
+						{ className: 'row small-up-3 medium-up-3 large-up-8' },
+						artistGrid
+					),
+					_react2.default.createElement(
+						'div',
+						null,
+						this.pagination.apply(this)
+					)
+				);
 			}
 		}]);
 
-		return AlbumStats;
+		return ArtistStats;
 	}(_react2.default.Component);
 
-	AlbumStats = (0, _reactRedux.connect)(function (state) {
+	ArtistStats = (0, _reactRedux.connect)(function (state) {
 		return state;
-	})(AlbumStats);
-	exports.default = AlbumStats;
+	})(ArtistStats);
+	exports.default = ArtistStats;
 
 /***/ }
 /******/ ]);

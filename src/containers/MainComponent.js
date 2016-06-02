@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router";
 import { Provider } from 'react-redux';
-import { getStats } from '../actions/actions';
+
 import store from '../stores/Store';
 import TopMenu from '../components/TopMenu';
 
@@ -9,7 +9,7 @@ class MainComponent extends React.Component {
 
 	constructor (props) {
 		super(props);
-		store.dispatch(getStats('glennwedin'));
+		
 		this.state = {
 			loading: store.getState().stats.isFetching
 		}

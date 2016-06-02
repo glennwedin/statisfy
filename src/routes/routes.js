@@ -2,6 +2,7 @@ import React from "react";
 import {Router, Route, IndexRoute} from "react-router";
 import MainComponent from "../containers/MainComponent";
 import UserComponent from "../containers/UserComponent";
+import ArtistComponent from "../containers/ArtistComponent";
 
 var mainroute = (history) => {
 	history = history || null;
@@ -9,7 +10,7 @@ var mainroute = (history) => {
 		<Router history={history}>
 			<Route path="/" component={MainComponent} >
 				<IndexRoute component={UserComponent} />
-				<Route path="/albums" component={UserComponent}/>
+				<Route path="/artists" component={ArtistComponent}/>
 				<Route path="/stream" component={UserComponent}/>
 			</Route>
 		</Router>

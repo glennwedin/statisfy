@@ -50,3 +50,41 @@ export function getStats(user) {
 		});
 	}
 }
+
+
+
+
+/*
+*	Fetch top artists with pagination
+*/
+
+export const REQUEST_TOP_ARTISTS = 'REQUEST_TOP_ARTISTS'
+function requestTopArtists(user) {
+  return {
+    type: REQUEST_TOP_ARTISTS,
+    user
+  }
+}
+
+export const RECEIVE_TOP_ARTISTS = 'RECEIVE_TOP_ARTISTS'
+function receiveTopArtists(user, json) {
+  return {
+    type: RECEIVE_TOP_ARTISTS,
+    user,
+    artiststats: json,
+    receivedAt: Date.now()
+  }
+}
+
+export function getTopArtists(user, count, page) {
+	return function (dispatch) {
+		dispatch(requestTopArtists(user))
+		return fetch('http://ws.audioscrobbler.com/2.0/?method=user.gettopartists&user='+user+'&limit='+count+'&page='+page+'&api_key=484711f72a2c24bf969ab0e30abe3d6a&format=json')
+			.then(response => response.json())
+			.then(json => {
+				dispatch(receiveTopArtists(user, json.topartists))
+			}).catch(err => {
+			console.log(err)
+		});
+	}
+}
