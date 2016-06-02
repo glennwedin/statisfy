@@ -21,7 +21,7 @@ function stats(state = {
 			return Object.assign({}, state, {
 				isFetching: false,
 				didInvalidate: false,
-				userstats: action.userstats[0],
+				userstats: action.userstats,
 				lastUpdated: action.receivedAt
 			});
 		default: 

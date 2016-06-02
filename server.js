@@ -66,6 +66,10 @@
 
 	var _path2 = _interopRequireDefault(_path);
 
+	var _debug = __webpack_require__(7);
+
+	var _debug2 = _interopRequireDefault(_debug);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var app = (0, _express2.default)();
@@ -49379,18 +49383,38 @@
 		function MainComponent(props) {
 			_classCallCheck(this, MainComponent);
 
-			return _possibleConstructorReturn(this, Object.getPrototypeOf(MainComponent).call(this, props));
+			var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(MainComponent).call(this, props));
+
+			_Store2.default.dispatch((0, _actions.getStats)('glennwedin'));
+			_this.state = {
+				loading: _Store2.default.getState().stats.isFetching
+			};
+			return _this;
 		}
 
 		_createClass(MainComponent, [{
 			key: "componentDidMount",
 			value: function componentDidMount() {
+				var _this2 = this;
+
 				//console.log('test')
-				_Store2.default.dispatch((0, _actions.getStats)('glennwedin'));
+				_Store2.default.subscribe(function () {
+					_this2.setState({
+						loading: _Store2.default.getState().stats.isFetching
+					});
+				});
 			}
 		}, {
 			key: "render",
 			value: function render() {
+				var loadingScreen = "";
+				if (this.state.loading) {
+					loadingScreen = _react2.default.createElement(
+						"div",
+						{ className: "loading" },
+						"LOADING"
+					);
+				}
 				return _react2.default.createElement(
 					_reactRedux.Provider,
 					{ store: _Store2.default },
@@ -49404,12 +49428,13 @@
 							_react2.default.createElement(
 								"title",
 								null,
-								"Simple-isomorphic-react-boilerplate"
+								"Statisfy"
 							)
 						),
 						_react2.default.createElement(
 							"body",
 							null,
+							loadingScreen,
 							_react2.default.createElement(_TopMenu2.default, null),
 							_react2.default.createElement(
 								"div",
@@ -50954,37 +50979,17 @@
 					receivedAt: Date.now()
 			};
 	}
+
 	/*
-	export const RECEIVE_ALBUM_STATS = 'RECEIVE_STATS'
-	function receiveStats(user, json) {
-	  return {
-	    type: RECEIVE_ALBUM_STATS,
-	    user,
-	    albumstats: json,
-	    receivedAt: Date.now()
-	  }
-	}
-
-	export function getAlbumStats(user) {
-		return function (dispatch) {
-			dispatch(requestStats(user)) //Request
-
-			//user
-			return fetch('http://ws.audioscrobbler.com/2.0/?method=user.gettopalbums&user=rj&api_key=484711f72a2c24bf969ab0e30abe3d6a&format=json')
-				.then(response => response.json())
-				.then(json => dispatch(receiveAlbumStats(user, json))
-		  	).catch(err => {
-				console.log(err)
-			});
-		}
-	}
+	* Fetch stats for user	
 	*/
 
 	function getStats(user) {
 			return function (dispatch) {
-					dispatch(requestStats(user)); //Request
+					dispatch(requestStats(user));
 
-					var statlist = ['user.gettoptracks', 'user.gettopalbums'];
+					//List which endpoints to fetch
+					var statlist = ['user.gettoptracks', 'user.gettopalbums', 'user.getrecenttracks'];
 
 					var promises = statlist.map(function (type) {
 							return new Promise(function (resolve) {
@@ -50999,7 +51004,12 @@
 					});
 
 					Promise.all(promises).then(function (values) {
-							dispatch(receiveStats(user, values));
+							var data = {
+									toptracks: values[0].toptracks,
+									topalbums: values[1].topalbums,
+									recenttracks: values[2].recenttracks
+							};
+							dispatch(receiveStats(user, data));
 					});
 			};
 	}
@@ -51342,7 +51352,7 @@
 				return Object.assign({}, state, {
 					isFetching: false,
 					didInvalidate: false,
-					userstats: action.userstats[0],
+					userstats: action.userstats,
 					lastUpdated: action.receivedAt
 				});
 			default:

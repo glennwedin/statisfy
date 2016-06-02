@@ -9,22 +9,35 @@ class MainComponent extends React.Component {
 
 	constructor (props) {
 		super(props);
+		store.dispatch(getStats('glennwedin'));
+		this.state = {
+			loading: store.getState().stats.isFetching
+		}
 	}
 
 	componentDidMount() {
 		//console.log('test')
-		store.dispatch(getStats('glennwedin'));
+		store.subscribe(() => {
+			this.setState({
+				loading: store.getState().stats.isFetching
+			})
+		});
 	}
 
 	render () {
+		let loadingScreen = "";
+		if(this.state.loading) {
+			loadingScreen = <div className="loading">LOADING</div>
+		}
 		return (
 				<Provider store={store}>
 					<html lang="en">
 					<head>
 						<meta charSet="UTF-8" />
-						<title>Simple-isomorphic-react-boilerplate</title>
+						<title>Statisfy</title>
 					</head>
 					<body>
+						{loadingScreen}
 						<TopMenu />
 						<div id="app">{this.props.children}</div>
 						<script type="text/javascript" src="js/app.js"></script>

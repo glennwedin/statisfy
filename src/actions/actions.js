@@ -15,37 +15,17 @@ function receiveStats(user, json) {
     receivedAt: Date.now()
   }
 }
+
 /*
-export const RECEIVE_ALBUM_STATS = 'RECEIVE_STATS'
-function receiveStats(user, json) {
-  return {
-    type: RECEIVE_ALBUM_STATS,
-    user,
-    albumstats: json,
-    receivedAt: Date.now()
-  }
-}
-
-export function getAlbumStats(user) {
-	return function (dispatch) {
-		dispatch(requestStats(user)) //Request
-
-		//user
-		return fetch('http://ws.audioscrobbler.com/2.0/?method=user.gettopalbums&user=rj&api_key=484711f72a2c24bf969ab0e30abe3d6a&format=json')
-			.then(response => response.json())
-			.then(json => dispatch(receiveAlbumStats(user, json))
-	  	).catch(err => {
-			console.log(err)
-		});
-	}
-}
+* Fetch stats for user	
 */
 
 export function getStats(user) {
 	return function (dispatch) {
-		dispatch(requestStats(user)) //Request
+		dispatch(requestStats(user))
 
-		let statlist = ['user.gettoptracks', 'user.gettopalbums']
+		//List which endpoints to fetch
+		let statlist = ['user.gettoptracks', 'user.gettopalbums', 'user.getrecenttracks']
 
 		let promises = statlist.map((type) => {
 			return new Promise((resolve) => {
@@ -61,7 +41,12 @@ export function getStats(user) {
 		})	
 
 		Promise.all(promises).then((values) => {
-			dispatch(receiveStats(user, values));
+			let data = {
+				toptracks: values[0].toptracks,
+				topalbums: values[1].topalbums,
+				recenttracks: values[2].recenttracks,
+			}
+			dispatch(receiveStats(user, data));
 		});
 	}
 }
