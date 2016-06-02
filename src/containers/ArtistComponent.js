@@ -7,15 +7,23 @@ class ArtistComponent extends React.Component {
 
 	constructor (props) {
 		super(props);
+
+		this.state = {
+			page: 1,
+			username: 'draugon'
+		}
 	}
 
 	componentDidMount() {
-		let page = 1;
 		if(this.props.location.query.page) {
-			page = this.props.location.query.page;
+			this.setState({
+				page: this.props.location.query.page
+			}, () => {
+				this.props.dispatch(getTopArtists(this.state.username, 24, this.state.page));
+			});
+		} else {
+			this.props.dispatch(getTopArtists(this.state.username, 24, this.state.page));
 		}
-
-		this.props.dispatch(getTopArtists('draugon', 24, page));
 	}
 
 	render () {

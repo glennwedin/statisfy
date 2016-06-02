@@ -60,12 +60,16 @@ h1{
 }
 
 .loading{
-	background-color:#eee;
-	left: 0;
-	right: 0;
-	top: 0;
-	bottom: 0;
-	position: absolute;
+	background-color: #eee;
+    bottom: 0;
+    font-size: 2000%;
+    left: 0;
+    position: absolute;
+    right: 0;
+    text-align: center;
+    text-shadow: 10px 10px 0 #6d6d6d, -10px -10px 0 #ccc;
+    top: 0;
+    z-index: 10;
 }
 
 .artist-grid-item{
@@ -94,12 +98,22 @@ h1{
 }
 
 .pagination{
+	height: 45px;
+	text-align: center;
+	.wrap{
+		display: inline-block;
+
+	}
 	.p{
 		background-color: #333;
 	    color: #fff;
 	    float: left;
 		margin: 0.5em 0.2em 0;
 	    padding: 0.2em 0.5em;
+	    cursor: pointer;
+	    &:hover{
+	    	background-color: #aaa;
+	    }
 	}
 
 	.pagination-section{

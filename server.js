@@ -49320,7 +49320,7 @@
 
 	var _UserComponent2 = _interopRequireDefault(_UserComponent);
 
-	var _ArtistComponent = __webpack_require__(338);
+	var _ArtistComponent = __webpack_require__(336);
 
 	var _ArtistComponent2 = _interopRequireDefault(_ArtistComponent);
 
@@ -49363,7 +49363,7 @@
 
 	var _reactRedux = __webpack_require__(308);
 
-	var _Store = __webpack_require__(329);
+	var _Store = __webpack_require__(328);
 
 	var _Store2 = _interopRequireDefault(_Store);
 
@@ -50955,104 +50955,6 @@
 
 /***/ },
 /* 328 */
-/***/ function(module, exports) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-			value: true
-	});
-	exports.getStats = getStats;
-	exports.getTopArtists = getTopArtists;
-	var REQUEST_STATS = exports.REQUEST_STATS = 'REQUEST_STATS';
-	function requestStats(user) {
-			return {
-					type: REQUEST_STATS,
-					user: user
-			};
-	}
-
-	var RECEIVE_STATS = exports.RECEIVE_STATS = 'RECEIVE_STATS';
-	function receiveStats(user, json) {
-			return {
-					type: RECEIVE_STATS,
-					user: user,
-					userstats: json,
-					receivedAt: Date.now()
-			};
-	}
-
-	/*
-	* Fetch stats for user	
-	*/
-
-	function getStats(user) {
-			return function (dispatch) {
-					dispatch(requestStats(user));
-
-					//List which endpoints to fetch
-					var statlist = ['user.gettoptracks', 'user.gettopalbums', 'user.getrecenttracks'];
-
-					var promises = statlist.map(function (type) {
-							return new Promise(function (resolve) {
-									fetch('http://ws.audioscrobbler.com/2.0/?method=' + type + '&user=' + user + '&api_key=484711f72a2c24bf969ab0e30abe3d6a&format=json').then(function (response) {
-											return response.json();
-									}).then(function (json) {
-											resolve(json);
-									}).catch(function (err) {
-											console.log(err);
-									});
-							});
-					});
-
-					Promise.all(promises).then(function (values) {
-							var data = {
-									toptracks: values[0].toptracks,
-									topalbums: values[1].topalbums,
-									recenttracks: values[2].recenttracks
-							};
-							dispatch(receiveStats(user, data));
-					});
-			};
-	}
-
-	/*
-	*	Fetch top artists with pagination
-	*/
-
-	var REQUEST_TOP_ARTISTS = exports.REQUEST_TOP_ARTISTS = 'REQUEST_TOP_ARTISTS';
-	function requestTopArtists(user) {
-			return {
-					type: REQUEST_TOP_ARTISTS,
-					user: user
-			};
-	}
-
-	var RECEIVE_TOP_ARTISTS = exports.RECEIVE_TOP_ARTISTS = 'RECEIVE_TOP_ARTISTS';
-	function receiveTopArtists(user, json) {
-			return {
-					type: RECEIVE_TOP_ARTISTS,
-					user: user,
-					artiststats: json,
-					receivedAt: Date.now()
-			};
-	}
-
-	function getTopArtists(user, count, page) {
-			return function (dispatch) {
-					dispatch(requestTopArtists(user));
-					return fetch('http://ws.audioscrobbler.com/2.0/?method=user.gettopartists&user=' + user + '&limit=' + count + '&page=' + page + '&api_key=484711f72a2c24bf969ab0e30abe3d6a&format=json').then(function (response) {
-							return response.json();
-					}).then(function (json) {
-							dispatch(receiveTopArtists(user, json.topartists));
-					}).catch(function (err) {
-							console.log(err);
-					});
-			};
-	}
-
-/***/ },
-/* 329 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -51063,15 +50965,15 @@
 
 	var _redux = __webpack_require__(315);
 
-	var _reduxThunk = __webpack_require__(330);
+	var _reduxThunk = __webpack_require__(329);
 
 	var _reduxThunk2 = _interopRequireDefault(_reduxThunk);
 
-	var _reduxLogger = __webpack_require__(331);
+	var _reduxLogger = __webpack_require__(330);
 
 	var _reduxLogger2 = _interopRequireDefault(_reduxLogger);
 
-	var _reducers = __webpack_require__(332);
+	var _reducers = __webpack_require__(331);
 
 	var _reducers2 = _interopRequireDefault(_reducers);
 
@@ -51084,7 +50986,7 @@
 	exports.default = store;
 
 /***/ },
-/* 330 */
+/* 329 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -51112,7 +51014,7 @@
 	exports['default'] = thunk;
 
 /***/ },
-/* 331 */
+/* 330 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -51357,7 +51259,7 @@
 	module.exports = createLogger;
 
 /***/ },
-/* 332 */
+/* 331 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -51366,7 +51268,7 @@
 		value: true
 	});
 
-	var _actions = __webpack_require__(328);
+	var _actions = __webpack_require__(332);
 
 	var _redux = __webpack_require__(315);
 
@@ -51414,6 +51316,104 @@
 	});
 
 	exports.default = MainAppReducer;
+
+/***/ },
+/* 332 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+			value: true
+	});
+	exports.getStats = getStats;
+	exports.getTopArtists = getTopArtists;
+	var REQUEST_STATS = exports.REQUEST_STATS = 'REQUEST_STATS';
+	function requestStats(user) {
+			return {
+					type: REQUEST_STATS,
+					user: user
+			};
+	}
+
+	var RECEIVE_STATS = exports.RECEIVE_STATS = 'RECEIVE_STATS';
+	function receiveStats(user, json) {
+			return {
+					type: RECEIVE_STATS,
+					user: user,
+					userstats: json,
+					receivedAt: Date.now()
+			};
+	}
+
+	/*
+	* Fetch stats for user	
+	*/
+
+	function getStats(user) {
+			return function (dispatch) {
+					dispatch(requestStats(user));
+
+					//List which endpoints to fetch
+					var statlist = ['user.gettoptracks', 'user.gettopalbums', 'user.getrecenttracks'];
+
+					var promises = statlist.map(function (type) {
+							return new Promise(function (resolve) {
+									fetch('http://ws.audioscrobbler.com/2.0/?method=' + type + '&user=' + user + '&api_key=484711f72a2c24bf969ab0e30abe3d6a&format=json').then(function (response) {
+											return response.json();
+									}).then(function (json) {
+											resolve(json);
+									}).catch(function (err) {
+											console.log(err);
+									});
+							});
+					});
+
+					Promise.all(promises).then(function (values) {
+							var data = {
+									toptracks: values[0].toptracks,
+									topalbums: values[1].topalbums,
+									recenttracks: values[2].recenttracks
+							};
+							dispatch(receiveStats(user, data));
+					});
+			};
+	}
+
+	/*
+	*	Fetch top artists with pagination
+	*/
+
+	var REQUEST_TOP_ARTISTS = exports.REQUEST_TOP_ARTISTS = 'REQUEST_TOP_ARTISTS';
+	function requestTopArtists(user) {
+			return {
+					type: REQUEST_TOP_ARTISTS,
+					user: user
+			};
+	}
+
+	var RECEIVE_TOP_ARTISTS = exports.RECEIVE_TOP_ARTISTS = 'RECEIVE_TOP_ARTISTS';
+	function receiveTopArtists(user, json) {
+			return {
+					type: RECEIVE_TOP_ARTISTS,
+					user: user,
+					artiststats: json,
+					receivedAt: Date.now()
+			};
+	}
+
+	function getTopArtists(user, count, page) {
+			return function (dispatch) {
+					dispatch(requestTopArtists(user));
+					return fetch('http://ws.audioscrobbler.com/2.0/?method=user.gettopartists&user=' + user + '&limit=' + count + '&page=' + page + '&api_key=484711f72a2c24bf969ab0e30abe3d6a&format=json').then(function (response) {
+							return response.json();
+					}).then(function (json) {
+							dispatch(receiveTopArtists(user, json.topartists));
+					}).catch(function (err) {
+							console.log(err);
+					});
+			};
+	}
 
 /***/ },
 /* 333 */
@@ -51501,7 +51501,7 @@
 
 	var _UserStats2 = _interopRequireDefault(_UserStats);
 
-	var _actions = __webpack_require__(328);
+	var _actions = __webpack_require__(332);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -51681,9 +51681,7 @@
 	exports.default = UserStats;
 
 /***/ },
-/* 336 */,
-/* 337 */,
-/* 338 */
+/* 336 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -51700,11 +51698,11 @@
 
 	var _reactRedux = __webpack_require__(308);
 
-	var _ArtistStats = __webpack_require__(339);
+	var _ArtistStats = __webpack_require__(337);
 
 	var _ArtistStats2 = _interopRequireDefault(_ArtistStats);
 
-	var _actions = __webpack_require__(328);
+	var _actions = __webpack_require__(332);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -51720,18 +51718,29 @@
 		function ArtistComponent(props) {
 			_classCallCheck(this, ArtistComponent);
 
-			return _possibleConstructorReturn(this, Object.getPrototypeOf(ArtistComponent).call(this, props));
+			var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ArtistComponent).call(this, props));
+
+			_this.state = {
+				page: 1,
+				username: 'draugon'
+			};
+			return _this;
 		}
 
 		_createClass(ArtistComponent, [{
 			key: 'componentDidMount',
 			value: function componentDidMount() {
-				var page = 1;
-				if (this.props.location.query.page) {
-					page = this.props.location.query.page;
-				}
+				var _this2 = this;
 
-				this.props.dispatch((0, _actions.getTopArtists)('draugon', 24, page));
+				if (this.props.location.query.page) {
+					this.setState({
+						page: this.props.location.query.page
+					}, function () {
+						_this2.props.dispatch((0, _actions.getTopArtists)(_this2.state.username, 24, _this2.state.page));
+					});
+				} else {
+					this.props.dispatch((0, _actions.getTopArtists)(this.state.username, 24, this.state.page));
+				}
 			}
 		}, {
 			key: 'render',
@@ -51766,7 +51775,7 @@
 	exports.default = ArtistComponent;
 
 /***/ },
-/* 339 */
+/* 337 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -51783,6 +51792,10 @@
 
 	var _reactRedux = __webpack_require__(308);
 
+	var _reactRouter = __webpack_require__(118);
+
+	var _actions = __webpack_require__(332);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -51797,12 +51810,7 @@
 		function ArtistStats(props) {
 			_classCallCheck(this, ArtistStats);
 
-			var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ArtistStats).call(this, props));
-
-			_this.state = {
-				page: props.page
-			};
-			return _this;
+			return _possibleConstructorReturn(this, Object.getPrototypeOf(ArtistStats).call(this, props));
 		}
 
 		_createClass(ArtistStats, [{
@@ -51810,7 +51818,11 @@
 			value: function componentDidMount() {}
 		}, {
 			key: 'setPage',
-			value: function setPage() {}
+			value: function setPage(e) {
+				var page = parseInt(e.target.innerHTML);
+				this.props.dispatch((0, _actions.getTopArtists)("draugon", 24, page));
+				_reactRouter.browserHistory.push('/artists?page=' + page);
+			}
 		}, {
 			key: 'pagination',
 			value: function pagination() {
@@ -51821,72 +51833,71 @@
 					    middle = [],
 					    last = [];
 
-					for (var x = 1; x <= 5; x++) {
+					/*
+	    for(let x = this.state.page+5, y = 0; y <=5; x++, y++) {
+	    	first.push(<div key={x} className="p" onClick={this.setPage.bind(this)}>{x}</div>)
+	    }
+	    for(let x = this.state.page+(totalPages/2 - 5), y = 0; y < totalPages/2; x++, y++) {
+	    	middle.push(<div key={x} className="p" onClick={this.setPage.bind(this)}>{x}</div>)
+	    }
+	    for(let x = (totalPages - 4); x <= totalPages; x++) {
+	    	last.push(<div key={x} className="p" onClick={this.setPage.bind(this)}>{x}</div>)
+	    }
+	    */
+					var x = this.props.page - 10 >= 1 ? this.props.page - 10 : 1;
+					var y = 0;
+					for (x, y = 0; y < 20; x++, y++) {
 						first.push(_react2.default.createElement(
 							'div',
-							{ className: 'p' },
+							{ key: x, className: 'p', onClick: this.setPage.bind(this) },
 							x
 						));
 					}
-					for (var _x = totalPages / 2 - 5; _x < totalPages / 2; _x++) {
-						middle.push(_react2.default.createElement(
-							'div',
-							{ className: 'p' },
-							_x
-						));
-					}
-					for (var _x2 = totalPages - 5; _x2 < totalPages; _x2++) {
-						last.push(_react2.default.createElement(
-							'div',
-							{ className: 'p' },
-							_x2
-						));
-					}
+					last.push(_react2.default.createElement(
+						'div',
+						{ key: 'sdfsdgwrgw', className: 'p' },
+						' » ',
+						totalPages
+					));
 
 					return _react2.default.createElement(
 						'div',
 						{ className: 'pagination' },
 						_react2.default.createElement(
 							'div',
-							{ className: 'pagination-section' },
+							{ className: 'wrap' },
 							_react2.default.createElement(
 								'div',
-								{ className: 'p' },
-								'Previous'
-							)
-						),
-						_react2.default.createElement(
-							'div',
-							{ className: 'pagination-section' },
-							first
-						),
-						_react2.default.createElement(
-							'div',
-							{ className: 'pagination-section pagination-separator' },
-							' - - -'
-						),
-						_react2.default.createElement(
-							'div',
-							{ className: 'pagination-section' },
-							middle
-						),
-						_react2.default.createElement(
-							'div',
-							{ className: 'pagination-section pagination-separator' },
-							' - - -'
-						),
-						_react2.default.createElement(
-							'div',
-							{ className: 'pagination-section' },
-							last
-						),
-						_react2.default.createElement(
-							'div',
-							{ className: 'pagination-section' },
+								{ className: 'pagination-section' },
+								_react2.default.createElement(
+									'div',
+									{ className: 'p' },
+									'Previous'
+								)
+							),
 							_react2.default.createElement(
 								'div',
-								{ className: 'p' },
-								'Next'
+								{ className: 'pagination-section' },
+								first
+							),
+							_react2.default.createElement(
+								'div',
+								{ className: 'pagination-section pagination-separator' },
+								' - - -'
+							),
+							_react2.default.createElement(
+								'div',
+								{ className: 'pagination-section' },
+								last
+							),
+							_react2.default.createElement(
+								'div',
+								{ className: 'pagination-section' },
+								_react2.default.createElement(
+									'div',
+									{ className: 'p' },
+									'Next'
+								)
 							)
 						)
 					);
@@ -51897,10 +51908,10 @@
 		}, {
 			key: 'render',
 			value: function render() {
+				console.log(this.state);
 				var artistGrid = "";
 				if (this.props.stats.topartiststats.artist) {
 					artistGrid = this.props.stats.topartiststats.artist.map(function (a, i) {
-						console.log(a);
 						return _react2.default.createElement(
 							'div',
 							{ className: 'column artist-grid-item', style: { backgroundImage: 'url(' + a.image[2]['#text'] + ')' }, key: i },
@@ -51923,7 +51934,7 @@
 					null,
 					_react2.default.createElement(
 						'div',
-						{ className: 'row small-up-3 medium-up-3 large-up-8' },
+						{ className: 'small-up-3 medium-up-3 large-up-8' },
 						artistGrid
 					),
 					_react2.default.createElement(
