@@ -51541,24 +51541,31 @@
 			key: 'componentDidMount',
 			value: function componentDidMount() {}
 		}, {
+			key: 'showOptions',
+			value: function showOptions(e) {
+				var tr = e.target;
+			}
+		}, {
 			key: 'render',
 			value: function render() {
+				var _this2 = this;
+
 				var list = [];
 
 				if (this.props.stats.userstats.toptracks) {
 					var trackstat = this.props.stats.userstats.toptracks;
 					list = trackstat.track.map(function (el, i) {
 						return _react2.default.createElement(
-							'tr',
-							{ key: i },
+							'div',
+							{ key: i, onClick: _this2.showOptions.bind(_this2), className: 'tr' },
 							_react2.default.createElement(
-								'td',
-								null,
+								'div',
+								{ className: 'td' },
 								_react2.default.createElement('div', { style: styles(el.image[1]['#text']) })
 							),
 							_react2.default.createElement(
-								'td',
-								null,
+								'div',
+								{ className: 'td' },
 								_react2.default.createElement(
 									'div',
 									{ className: 'tablepad' },
@@ -51572,8 +51579,8 @@
 								)
 							),
 							_react2.default.createElement(
-								'td',
-								null,
+								'div',
+								{ className: 'td' },
 								el.playcount
 							)
 						);
@@ -51584,30 +51591,11 @@
 					'div',
 					{ className: '' },
 					_react2.default.createElement(
-						'table',
-						null,
+						'div',
+						{ className: 'table' },
 						_react2.default.createElement(
-							'thead',
-							null,
-							_react2.default.createElement(
-								'tr',
-								null,
-								_react2.default.createElement('th', null),
-								_react2.default.createElement(
-									'th',
-									null,
-									'Artist'
-								),
-								_react2.default.createElement(
-									'th',
-									null,
-									'Playcount'
-								)
-							)
-						),
-						_react2.default.createElement(
-							'tbody',
-							null,
+							'div',
+							{ className: 'tbody' },
 							list
 						)
 					)

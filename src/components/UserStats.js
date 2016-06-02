@@ -7,6 +7,11 @@ class UserStats extends React.Component {
 		    
 	}
 
+	showOptions (e) {
+		let tr = e.target;
+
+	}
+
 	render () {
 		let list = [];
 
@@ -14,34 +19,31 @@ class UserStats extends React.Component {
 			let trackstat = this.props.stats.userstats.toptracks;
 			list = trackstat.track.map((el, i) => {
 				return (
-					<tr key={i}>
-						<td>
+					<div key={i} onClick={this.showOptions.bind(this)} className="tr">
+						<div className="td">
 							<div style={styles(el.image[1]['#text'])}></div>
-						</td>
-						<td>
+						</div>
+						<div className="td">
 							<div className="tablepad">
 								{el.name}<br />
 								<strong>{el.artist.name}</strong>
 							</div>
-						</td>
-						<td>
+						</div>
+						<div className="td">
 							{el.playcount}
-						</td>
-					</tr>
+						</div>
+					</div>
 				)
 			});
 		}
 
 		return (
 			<div className="">
-				<table>
-					<thead>
-						<tr><th></th><th>Artist</th><th>Playcount</th></tr>
-					</thead>
-					<tbody>
+				<div className="table">
+					<div className="tbody">
 						{list}
-					</tbody>
-				</table>
+					</div>
+				</div>
 			</div>
 		)
 	}

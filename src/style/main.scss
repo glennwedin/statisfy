@@ -14,19 +14,35 @@ h1{
 	font-family: 'Roboto', sans-serif;
 }
 
-table{
+.table{
 	width: 100%;
 	border: 1px solid #eee;
 	font-family: 'Roboto', sans-serif;
+	display: table;
 
-	td, th{
+	.td, .th{
 		padding: 0.2em 0;
 		font-weight: 400;
 		text-align: center;
+		display: table-cell;
+		vertical-align: middle;
+		min-width: 30px;
+
+		&:last-child{
+			text-align: left;
+		}
 	}
 
-	tbody td{
+	.tbody .td{
 		border-bottom: 1px solid #aaa;
+	}
+
+	.tr{
+		display: table;
+		width: 100%;
+		&:hover, &:active{
+			background-color: #fff;
+		}
 	}
 }
 
