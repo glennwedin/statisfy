@@ -60,7 +60,7 @@
 
 	var _routes2 = _interopRequireDefault(_routes);
 
-	__webpack_require__(259);
+	__webpack_require__(260);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -27832,89 +27832,6 @@
 		}
 	}
 
-	/*
-	Initial state
-	*/
-
-	/*
-	let itemstate = [
-		{
-			text: "Hei"
-		},
-		{
-			text: "Jeg er tekst"
-		},
-		{
-			text: "Ja, men jeg er Glenn!"
-		}
-	]
-
-	let userstate = {
-		name: "Glenn Wedin",
-		age: 28,
-		mail: "glenn.wedin@gmail.com"
-	}
-	*/
-
-	/*
-	*	Reducer
-	*/
-	/*
-	function items (state = itemstate, action) {
-		switch(action.type) {
-			case ADD_ITEM: 
-				console.log('Adding item', action);
-				return [
-					...state,
-					{
-						text: action.text
-					}
-				]
-
-			default: 
-				return state;
-		}
-	}
-
-	function user(state = userstate, action) {
-		switch(action.type) {
-			case EDIT_USER:
-				console.log('Editing');
-				return {
-					name: action.name,
-					age: action.age,
-					mail: action.mail
-				}
-
-			default: 
-				return state;
-		}
-	}
-
-	function repos(state = {
-		isFetching: false,
-		didInvalidate: false,
-		repos: []
-	}, action) {
-		switch(action.type) {
-			case REQUEST_REPOS:
-				return Object.assign({}, state, { 
-					isFetching: true, 
-					didInvalidate: false 
-				});
-			case RECEIVE_REPOS:
-				return Object.assign({}, state, {
-					isFetching: false,
-					didInvalidate: false,
-					repos: action.posts,
-					lastUpdated: action.receivedAt
-				});
-			default: 
-				return state;
-		}
-	}
-	*/
-
 	var MainAppReducer = (0, _redux.combineReducers)({
 		stats: stats
 	});
@@ -28007,7 +27924,7 @@
 
 	var _UserStats2 = _interopRequireDefault(_UserStats);
 
-	var _AlbumStats = __webpack_require__(263);
+	var _AlbumStats = __webpack_require__(259);
 
 	var _AlbumStats2 = _interopRequireDefault(_AlbumStats);
 
@@ -28191,13 +28108,66 @@
 /* 259 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactRedux = __webpack_require__(231);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var AlbumStats = function (_React$Component) {
+		_inherits(AlbumStats, _React$Component);
+
+		function AlbumStats() {
+			_classCallCheck(this, AlbumStats);
+
+			return _possibleConstructorReturn(this, Object.getPrototypeOf(AlbumStats).apply(this, arguments));
+		}
+
+		_createClass(AlbumStats, [{
+			key: 'componentDidMount',
+			value: function componentDidMount() {}
+		}, {
+			key: 'render',
+			value: function render() {
+				return _react2.default.createElement('div', null);
+			}
+		}]);
+
+		return AlbumStats;
+	}(_react2.default.Component);
+
+	AlbumStats = (0, _reactRedux.connect)(function (state) {
+		return state;
+	})(AlbumStats);
+	exports.default = AlbumStats;
+
+/***/ },
+/* 260 */
+/***/ function(module, exports, __webpack_require__) {
+
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(260);
+	var content = __webpack_require__(261);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(262)(content, {});
+	var update = __webpack_require__(263)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -28214,10 +28184,10 @@
 	}
 
 /***/ },
-/* 260 */
+/* 261 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(261)();
+	exports = module.exports = __webpack_require__(262)();
 	// imports
 	exports.push([module.id, "@import url(https://fonts.googleapis.com/css?family=Roboto:400,300,500,100,700);", ""]);
 
@@ -28228,7 +28198,7 @@
 
 
 /***/ },
-/* 261 */
+/* 262 */
 /***/ function(module, exports) {
 
 	/*
@@ -28284,7 +28254,7 @@
 
 
 /***/ },
-/* 262 */
+/* 263 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -28534,59 +28504,6 @@
 			URL.revokeObjectURL(oldSrc);
 	}
 
-
-/***/ },
-/* 263 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _reactRedux = __webpack_require__(231);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var AlbumStats = function (_React$Component) {
-		_inherits(AlbumStats, _React$Component);
-
-		function AlbumStats() {
-			_classCallCheck(this, AlbumStats);
-
-			return _possibleConstructorReturn(this, Object.getPrototypeOf(AlbumStats).apply(this, arguments));
-		}
-
-		_createClass(AlbumStats, [{
-			key: 'componentDidMount',
-			value: function componentDidMount() {}
-		}, {
-			key: 'render',
-			value: function render() {
-				return _react2.default.createElement('div', null);
-			}
-		}]);
-
-		return AlbumStats;
-	}(_react2.default.Component);
-
-	AlbumStats = (0, _reactRedux.connect)(function (state) {
-		return state;
-	})(AlbumStats);
-	exports.default = AlbumStats;
 
 /***/ }
 /******/ ]);
