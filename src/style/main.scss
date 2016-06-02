@@ -1,0 +1,44 @@
+@import "foundation";
+@import url(https://fonts.googleapis.com/css?family=Roboto:400,300,500,100,700);
+
+body{
+	margin: 0;
+	padding: 0;
+	background-color: #eee;
+	color: #333;
+	font-family: 'Roboto', sans-serif;
+}
+
+h1{
+	font-weight: 300;
+	font-family: 'Roboto', sans-serif;
+}
+
+table{
+	width: 100%;
+	border: 1px solid #eee;
+	font-family: 'Roboto', sans-serif;
+
+	td, th{
+		padding: 0.2em 0;
+		font-weight: 400;
+		text-align: center;
+	}
+
+	tbody td{
+		border-bottom: 1px solid #aaa;
+	}
+}
+
+//Components
+.topmenu{
+	padding: 1em 0;
+	.title{
+		font-size: 2em;
+		font-weight: 200;
+	}
+}
+
+.tablepad{
+	padding: 0 1em;
+}
