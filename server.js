@@ -51431,6 +51431,8 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
+	var _reactRouter = __webpack_require__(118);
+
 	var _reactRedux = __webpack_require__(308);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -51455,14 +51457,58 @@
 			value: function render() {
 				return _react2.default.createElement(
 					'div',
-					{ className: 'row topmenu' },
+					{ className: 'topmenu' },
 					_react2.default.createElement(
 						'div',
-						{ className: 'small-12 columns' },
+						{ className: 'row' },
 						_react2.default.createElement(
 							'div',
-							{ className: 'title' },
-							'Statisfy'
+							{ className: 'small-6 columns' },
+							_react2.default.createElement(
+								'div',
+								{ className: 'title' },
+								'Statisfy'
+							)
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'small-6 columns' },
+							_react2.default.createElement(
+								'nav',
+								{ className: 'menu' },
+								_react2.default.createElement(
+									'ul',
+									null,
+									_react2.default.createElement(
+										'li',
+										null,
+										_react2.default.createElement(
+											_reactRouter.Link,
+											{ to: '/' },
+											'Main stats'
+										)
+									),
+									_react2.default.createElement(
+										'li',
+										null,
+										_react2.default.createElement(
+											_reactRouter.Link,
+											{ to: '/artists' },
+											'My artists'
+										)
+									),
+									_react2.default.createElement(
+										'li',
+										null,
+										_react2.default.createElement(_reactRouter.Link, { to: '/' })
+									),
+									_react2.default.createElement(
+										'li',
+										null,
+										_react2.default.createElement(_reactRouter.Link, { to: '/' })
+									)
+								)
+							)
 						)
 					)
 				);
@@ -51500,6 +51546,10 @@
 	var _UserStats = __webpack_require__(335);
 
 	var _UserStats2 = _interopRequireDefault(_UserStats);
+
+	var _LatestStats = __webpack_require__(338);
+
+	var _LatestStats2 = _interopRequireDefault(_LatestStats);
 
 	var _actions = __webpack_require__(332);
 
@@ -51548,7 +51598,8 @@
 							'h1',
 							null,
 							'Userfeed'
-						)
+						),
+						_react2.default.createElement(_LatestStats2.default, null)
 					)
 				);
 			}
@@ -51953,6 +52004,131 @@
 		return state;
 	})(ArtistStats);
 	exports.default = ArtistStats;
+
+/***/ },
+/* 338 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(82);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactRedux = __webpack_require__(308);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var LatestStats = function (_React$Component) {
+		_inherits(LatestStats, _React$Component);
+
+		function LatestStats() {
+			_classCallCheck(this, LatestStats);
+
+			return _possibleConstructorReturn(this, Object.getPrototypeOf(LatestStats).apply(this, arguments));
+		}
+
+		_createClass(LatestStats, [{
+			key: 'componentDidMount',
+			value: function componentDidMount() {}
+		}, {
+			key: 'showOptions',
+			value: function showOptions(e) {
+				var tr = e.target;
+			}
+		}, {
+			key: 'render',
+			value: function render() {
+				var _this2 = this;
+
+				var list = [];
+
+				if (this.props.stats.userstats.recenttracks) {
+					var trackstat = this.props.stats.userstats.recenttracks;
+					list = trackstat.track.map(function (el, i) {
+						var date = "";
+
+						if (el['@attr']) {
+							date = "Playing now";
+						} else if (el.date) {
+							date = el.date['#text'];
+						}
+						return _react2.default.createElement(
+							'div',
+							{ key: i, onClick: _this2.showOptions.bind(_this2), className: 'tr' },
+							_react2.default.createElement(
+								'div',
+								{ className: 'td' },
+								_react2.default.createElement('div', { style: styles(el.image[1]['#text']) })
+							),
+							_react2.default.createElement(
+								'div',
+								{ className: 'td' },
+								_react2.default.createElement(
+									'div',
+									{ className: 'tablepad' },
+									el.name,
+									_react2.default.createElement('br', null),
+									_react2.default.createElement(
+										'strong',
+										null,
+										el.artist['#text']
+									)
+								)
+							),
+							_react2.default.createElement(
+								'div',
+								{ className: 'td' },
+								date
+							)
+						);
+					});
+				}
+
+				return _react2.default.createElement(
+					'div',
+					{ className: '' },
+					_react2.default.createElement(
+						'div',
+						{ className: 'table' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'tbody' },
+							list
+						)
+					)
+				);
+			}
+		}]);
+
+		return LatestStats;
+	}(_react2.default.Component);
+
+	var styles = function styles(img) {
+		return {
+			width: "50px",
+			height: "50px",
+			backgroundSize: 'cover',
+			backgroundImage: 'url(' + img + ')'
+		};
+	};
+
+	LatestStats = (0, _reactRedux.connect)(function (state) {
+		return state;
+	})(LatestStats);
+	exports.default = LatestStats;
 
 /***/ }
 /******/ ]);

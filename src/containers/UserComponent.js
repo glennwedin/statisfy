@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import UserStats from '../components/UserStats';
+import LatestStats from '../components/LatestStats';
 import { getStats } from '../actions/actions';
 
 class UserComponent extends React.Component {
@@ -23,6 +24,7 @@ class UserComponent extends React.Component {
 				</div>
 				<div className="small-12 medium-4 columns">
 					<h1>Userfeed</h1>
+					<LatestStats />
 				</div>
 			</section>
 		)

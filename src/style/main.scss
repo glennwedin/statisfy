@@ -14,6 +14,10 @@ h1{
 	font-family: 'Roboto', sans-serif;
 }
 
+#app{
+	padding: 4em 0;
+}
+
 .table{
 	width: 100%;
 	border: 1px solid #eee;
@@ -49,9 +53,33 @@ h1{
 //Components
 .topmenu{
 	padding: 1em 0;
+	background-color: #333;
+	color:#aaa;
 	.title{
 		font-size: 2em;
 		font-weight: 200;
+		float: left;
+	}
+
+	.menu{
+		float:right;
+		padding: 0.7em 0;
+		ul{
+			list-style-type:none;
+			margin: 0;
+			padding: 0;
+
+		}
+		li{
+			display:inline-block;
+		}
+
+		a{
+			color: #eee;
+		    font-size: 1em;
+		    font-weight: 300;
+		    padding: 1em;
+		}
 	}
 }
 
@@ -61,14 +89,12 @@ h1{
 
 .loading{
 	background-color: #eee;
-    bottom: 0;
-    font-size: 2000%;
-    left: 0;
+    font-size: 1em;
     position: absolute;
-    right: 0;
+    right: 100px;
     text-align: center;
     text-shadow: 10px 10px 0 #6d6d6d, -10px -10px 0 #ccc;
-    top: 0;
+    top: 100px;
     z-index: 10;
 }
 
@@ -128,3 +154,4 @@ h1{
 		}
 	}
 }
+

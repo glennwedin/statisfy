@@ -1,12 +1,33 @@
 import React from 'react';
+import { Link } from 'react-router';
 import { connect } from 'react-redux';
 
 class TopMenu extends React.Component {
 	render () {
 		return (
-			<div className="row topmenu">
-				<div className="small-12 columns">
-					<div className="title">Statisfy</div>
+			<div className="topmenu">
+				<div className="row">
+					<div className="small-6 columns">
+						<div className="title">Statisfy</div>
+					</div>
+					<div className="small-6 columns">
+						<nav className="menu">
+							<ul>
+								<li>
+									<Link to="/">Main stats</Link>
+								</li>
+								<li>
+									<Link to="/artists">My artists</Link>
+								</li>
+								<li>
+									<Link to="/"></Link>
+								</li>
+								<li>
+									<Link to="/"></Link>
+								</li>
+							</ul>
+						</nav>
+					</div>
 				</div>
 			</div>
 		)
