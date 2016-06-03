@@ -9,8 +9,7 @@ class ArtistComponent extends React.Component {
 		super(props);
 
 		this.state = {
-			page: 1,
-			username: 'draugon'
+			page: 1
 		}
 	}
 
@@ -18,11 +17,17 @@ class ArtistComponent extends React.Component {
 		if(this.props.location.query.page) {
 			this.setState({
 				page: this.props.location.query.page
-			}, () => {
-				this.props.dispatch(getTopArtists(this.state.username, 24, this.state.page));
 			});
-		} else {
-			this.props.dispatch(getTopArtists(this.state.username, 24, this.state.page));
+		}
+
+		if(this.props.user.username) {
+			this.props.dispatch(getTopArtists(this.props.user.username, 24, this.state.page));
+		}
+	}
+
+	componentDidUpdate(prevProps, prevState) {
+		if(prevProps.user.username !== this.props.user.username) {
+			this.props.dispatch(getTopArtists(this.props.user.username, 24, this.state.page));
 		}
 	}
 

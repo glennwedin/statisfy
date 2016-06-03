@@ -2,7 +2,8 @@ import {
 	REQUEST_STATS,
 	RECEIVE_STATS,
 	REQUEST_TOP_ARTISTS,
-	RECEIVE_TOP_ARTISTS
+	RECEIVE_TOP_ARTISTS,
+	SET_USER
 } from "../actions/actions.js";
 import { combineReducers } from 'redux';
 
@@ -43,8 +44,22 @@ function stats(state = {
 	}
 }
 
+function user(state = {
+	username: null
+}, action) {
+	switch(action.type) {
+		case SET_USER:
+			return Object.assign({}, state, {
+				username: action.username
+			});
+		default:
+			return state;
+	}
+}
+
 const MainAppReducer = combineReducers({
-	stats
+	stats,
+	user
 });
 
 export default MainAppReducer;

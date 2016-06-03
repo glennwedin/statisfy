@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import moment from 'moment';
 
 class LatestStats extends React.Component {
 
@@ -23,7 +24,8 @@ class LatestStats extends React.Component {
 				if(el['@attr']) {
 					date = "Playing now";
 				} else if(el.date) {
-					date = el.date['#text'];
+					//console.log(el.date['#text'], moment(el.date['#text'], 'D MMM Y HH:mm').format('DD.MM.YYYY - HH:mm'));
+					date = el.date['#text'], moment(el.date['#text'], 'D MMM Y HH:mm').format('D.MM.YYYY - HH:mm');
 				}
 				return (
 					<div key={i} onClick={this.showOptions.bind(this)} className="tr">

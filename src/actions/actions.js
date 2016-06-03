@@ -1,3 +1,18 @@
+/*
+	Set USER
+*/
+export const SET_USER = 'SET_USER'
+export function setUser(username) {
+	return {
+		type: SET_USER,
+		username
+	}
+}
+
+/*
+* Fetch stats for user	
+*/
+
 export const REQUEST_STATS = 'REQUEST_STATS'
 function requestStats(user) {
   return {
@@ -15,10 +30,6 @@ function receiveStats(user, json) {
     receivedAt: Date.now()
   }
 }
-
-/*
-* Fetch stats for user	
-*/
 
 export function getStats(user) {
 	return function (dispatch) {
@@ -50,8 +61,6 @@ export function getStats(user) {
 		});
 	}
 }
-
-
 
 
 /*

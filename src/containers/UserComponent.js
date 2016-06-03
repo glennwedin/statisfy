@@ -12,7 +12,15 @@ class UserComponent extends React.Component {
 	}
 
 	componentDidMount() {
-		this.props.dispatch(getStats('glennwedin'));
+		if(this.props.user.username) {
+			this.props.dispatch(getStats(this.props.user.username));
+		}
+	}
+
+	componentDidUpdate(prevProps, prevState) {
+		if(prevProps.user.username !== this.props.user.username) {
+			this.props.dispatch(getStats(this.props.user.username));
+		}
 	}
 
 	render () {

@@ -14,8 +14,29 @@ class ArtistStats extends React.Component {
 
 	setPage(e) {
 		let page = parseInt(e.target.innerHTML);
-		this.props.dispatch(getTopArtists("draugon", 24, page));
+		this.props.dispatch(getTopArtists(this.props.user.username, 24, page));
 		browserHistory.push('/artists?page='+page)
+	}
+
+	next() {
+		let page = parseInt(this.props.page) || 1,
+		total = parseInt(this.props.stats.topartiststats['@attr'].totalPages);
+
+		if(page < total) {
+			page += 1;
+			this.props.dispatch(getTopArtists(this.props.user.username, 24, page));
+			browserHistory.push('/artists?page='+page)
+		}
+	}
+
+	previous() {
+		let page = parseInt(this.props.page) || 1;
+
+		if(page > 1) {
+			page -= 1;
+			this.props.dispatch(getTopArtists(this.props.user.username, 24, page));
+			browserHistory.push('/artists?page='+page)
+		}
 	}
 
 	pagination() {
@@ -26,17 +47,6 @@ class ArtistStats extends React.Component {
 				middle = [],
 				last = [];
 
-			/*
-			for(let x = this.state.page+5, y = 0; y <=5; x++, y++) {
-				first.push(<div key={x} className="p" onClick={this.setPage.bind(this)}>{x}</div>)
-			}
-			for(let x = this.state.page+(totalPages/2 - 5), y = 0; y < totalPages/2; x++, y++) {
-				middle.push(<div key={x} className="p" onClick={this.setPage.bind(this)}>{x}</div>)
-			}
-			for(let x = (totalPages - 4); x <= totalPages; x++) {
-				last.push(<div key={x} className="p" onClick={this.setPage.bind(this)}>{x}</div>)
-			}
-			*/
 			let x =  (this.props.page-10) >= 1 ? this.props.page-10 : 1;
 			let y = 0;
 			for(x, y = 0; y < 20; x++,y++) {
@@ -47,11 +57,11 @@ class ArtistStats extends React.Component {
 			return (
 				<div className="pagination">
 					<div className="wrap">
-						<div className="pagination-section"><div className="p">Previous</div></div>
+						<div className="pagination-section" onClick={this.previous.bind(this)}><div className="p">Previous</div></div>
 						<div className="pagination-section">{first}</div>
 						<div className="pagination-section pagination-separator"> - - -</div>
 						<div className="pagination-section">{last}</div>
-						<div className="pagination-section"><div className="p">Next</div></div>
+						<div className="pagination-section" onClick={this.next.bind(this)}><div className="p">Next</div></div>
 					</div>
 				</div>
 			)
