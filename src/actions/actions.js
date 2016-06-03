@@ -62,7 +62,6 @@ export function getStats(user) {
 	}
 }
 
-
 /*
 *	Fetch top artists with pagination
 */

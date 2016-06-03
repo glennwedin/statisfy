@@ -11,7 +11,7 @@ var mainroute = (history) => {
 			<Route path="/" component={MainComponent} >
 				<IndexRoute component={UserComponent} />
 				<Route path="/artists" component={ArtistComponent}/>
-				<Route path="/stream" component={UserComponent}/>
+				<Route path="/recommendations" component={UserComponent}/>
 			</Route>
 		</Router>
 	);

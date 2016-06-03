@@ -27,12 +27,15 @@ class UserComponent extends React.Component {
 		return (
 			<section className="row">
 				<div className="small-12 medium-4 columns">
-					<h1>My top tracks</h1>
+					<h1>Top tracks</h1>
 					<UserStats />
 				</div>
 				<div className="small-12 medium-4 columns">
-					<h1>Userfeed</h1>
+					<h1>Recent tracks</h1>
 					<LatestStats />
+				</div>
+				<div className="small-12 medium-4 columns">
+					&nbsp;
 				</div>
 			</section>
 		)

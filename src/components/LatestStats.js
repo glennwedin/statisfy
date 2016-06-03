@@ -19,13 +19,20 @@ class LatestStats extends React.Component {
 		if(this.props.stats.userstats.recenttracks) {
 			let trackstat = this.props.stats.userstats.recenttracks;
 			list = trackstat.track.map((el, i) => {
-				let date = "";
+				let date = "",
+				time = "";
 
 				if(el['@attr']) {
-					date = "Playing now";
+					date = "Now";
 				} else if(el.date) {
 					//console.log(el.date['#text'], moment(el.date['#text'], 'D MMM Y HH:mm').format('DD.MM.YYYY - HH:mm'));
-					date = el.date['#text'], moment(el.date['#text'], 'D MMM Y HH:mm').format('D.MM.YYYY - HH:mm');
+					if(moment(el.date['#text'], 'D MMM Y HH:mm').format('YYYY-MM-DD') == moment().format('YYYY-MM-DD')) {
+						time = "";
+						date = moment(el.date['#text'], 'D MMM Y HH:mm').format('HH:mm');
+					} else {
+						time = moment(el.date['#text'], 'D MMM Y HH:mm').format('HH:mm');
+						date = moment(el.date['#text'], 'D MMM Y HH:mm').format('D. MMM');
+					}
 				}
 				return (
 					<div key={i} onClick={this.showOptions.bind(this)} className="tr">
@@ -39,7 +46,10 @@ class LatestStats extends React.Component {
 							</div>
 						</div>
 						<div className="td">
-							{date}
+							<div className="date">
+								{time}<br />
+								{date}
+							</div>
 						</div>
 					</div>
 				)

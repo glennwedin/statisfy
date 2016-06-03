@@ -9,9 +9,13 @@ body{
 	font-family: 'Roboto', sans-serif;
 }
 
-h1{
+h1,h2,h3{
 	font-weight: 300;
 	font-family: 'Roboto', sans-serif;
+}
+
+h1{
+	font-size: 1.2em;
 }
 
 #app{
@@ -31,6 +35,7 @@ h1{
 		display: table-cell;
 		vertical-align: middle;
 		min-width: 30px;
+		position: relative;
 
 		&:last-child{
 			text-align: right;
@@ -39,6 +44,7 @@ h1{
 
 	.tbody .td{
 		border-bottom: 1px solid #aaa;
+
 	}
 
 	.tr{
@@ -48,6 +54,14 @@ h1{
 			background-color: #fff;
 		}
 	}
+}
+
+.date{
+	bottom: 0;
+    color: #878787;
+    font-size: 0.7em;
+    position: absolute;
+    right: 0;
 }
 
 //Components
@@ -126,6 +140,7 @@ h1{
 .pagination{
 	height: 45px;
 	text-align: center;
+	clear:both;
 	.wrap{
 		display: inline-block;
 
@@ -164,3 +179,26 @@ h1{
     top: 0;
     z-index: 11;
 }
+
+/* Small only */
+//@media screen and (max-width: 39.9375em) {}
+
+/* Medium and up */
+@media screen and (min-width: 40em) {
+	h1{
+		font-size: 1.6em;
+	}
+}
+
+/* Medium only */
+//@media screen and (min-width: 40em) and (max-width: 63.9375em) {}
+
+/* Large and up */
+@media screen and (min-width: 64em) {
+	h1{
+		font-size: 2em;
+	}
+}
+
+/* Large only */
+//@media screen and (min-width: 64em) and (max-width: 74.9375em) {}
