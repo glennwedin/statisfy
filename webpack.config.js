@@ -1,6 +1,8 @@
 var webpack = require('webpack');
 var path = require('path')
 
+var env = 'development';
+
 module.exports = [
     {
         name: 'server',
@@ -18,7 +20,14 @@ module.exports = [
                 },
                 { test:  /\.json$/, loader: 'json-loader' },
             ]
-        }
+        },
+        plugins: [
+            new webpack.DefinePlugin({
+                'process.env': {
+                    'NODE_ENV': '"'+env+'"'
+                }
+            })
+        ]
     },
     {
         name: 'client',
@@ -39,6 +48,13 @@ module.exports = [
                     loaders: ["style", "css", "scss", "sass"]
                 }
             ]
-        }
+        },
+        plugins: [
+            new webpack.DefinePlugin({
+                'process.env': {
+                    'NODE_ENV': '"'+env+'"'
+                }
+            })
+        ]
     }
 ];

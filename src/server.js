@@ -26,4 +26,4 @@ app.get('*', function (req, res) {
 });
 
 //Listen on port
-app.listen(3000);
+app.listen(3002);

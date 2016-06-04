@@ -1,3 +1,5 @@
+import LocalDatabase from '../data/LocalDatabase';
+
 /*
 	Set USER
 */
@@ -74,6 +76,7 @@ function requestTopArtists(user) {
   }
 }
 
+//deprecated ?
 export const RECEIVE_TOP_ARTISTS = 'RECEIVE_TOP_ARTISTS'
 function receiveTopArtists(user, json) {
   return {
@@ -84,15 +87,48 @@ function receiveTopArtists(user, json) {
   }
 }
 
+//Deprecated
+/*
 export function getTopArtists(user, count, page) {
 	return function (dispatch) {
 		dispatch(requestTopArtists(user))
 		return fetch('http://ws.audioscrobbler.com/2.0/?method=user.gettopartists&user='+user+'&limit='+count+'&page='+page+'&api_key=484711f72a2c24bf969ab0e30abe3d6a&format=json')
 			.then(response => response.json())
 			.then(json => {
+				new LocalDatabase('artists', json);
 				dispatch(receiveTopArtists(user, json.topartists))
 			}).catch(err => {
 			console.log(err)
 		});
+	}
+}
+*/
+
+export function getTopArtists(user) {
+	return function (dispatch) {
+		let page = 1,
+		total = 1,
+		result = [];
+
+		let recursive = () => {
+			fetch('http://ws.audioscrobbler.com/2.0/?method=user.gettopartists&user='+user+'&limit=200&page='+page+'&api_key=484711f72a2c24bf969ab0e30abe3d6a&format=json')
+			.then(response => response.json())
+			.then(json => {
+				total = json.topartists['@attr'].totalPages;
+				result = result.concat(json.topartists.artist);
+				if(page < total && page < 2) { //FIKS
+					page++;
+					recursive();
+				} else {
+					new LocalDatabase('artists', result);
+					dispatch(receiveTopArtists(user, json.topartists))
+					//console.log(result)
+				}
+			}).catch(err => {
+				console.log(err);
+			})
+		}
+		recursive();
+
 	}
 }
