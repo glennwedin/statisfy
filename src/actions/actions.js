@@ -105,6 +105,7 @@ export function getTopArtists(user, count, page) {
 */
 
 export function getTopArtists(user) {
+	let db = new LocalDatabase('artists');
 	return function (dispatch) {
 		let page = 1,
 		total = 1,
@@ -120,15 +121,33 @@ export function getTopArtists(user) {
 					page++;
 					recursive();
 				} else {
-					new LocalDatabase('artists', result);
-					dispatch(receiveTopArtists(user, json.topartists))
+					db.add(result);
+					//dispatch(receiveTopArtists(user, json.topartists))
 					//console.log(result)
 				}
 			}).catch(err => {
 				console.log(err);
 			})
 		}
+
+		//request data from localdb
+
+		//or fetch and insert
 		recursive();
 
 	}
 }
+
+/*
+export function getFriends(user) {
+	return function (dispatch) {
+		fetch('http://ws.audioscrobbler.com/2.0/?method=user.getfriends&user='+user+'&api_key=484711f72a2c24bf969ab0e30abe3d6a&format=json')
+		.then(response => response.json())
+		.then(json => {
+
+		}).catch(err => {
+			console.log(err);
+		})
+	}
+}
+*/

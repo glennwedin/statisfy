@@ -1,6 +1,6 @@
-let LocalDatabase = function (databasename, data) {
-	this.data = data;
+let LocalDatabase = function (databasename) {
 	this.db = window.indexedDB.open(databasename, 4);
+	this.customerObjectStore;
 	this.db.onerror = function (err) {
 		console.log(err)
 	}
@@ -22,11 +22,14 @@ let LocalDatabase = function (databasename, data) {
 		// Store values in the newly created objectStore.
 			console.log('transaction complete')
 			this.customerObjectStore = db.transaction("artists", "readwrite").objectStore("artists");
-			for (var i in this.data) {
-				//console.log(this.data[i]);
-			    this.customerObjectStore.add(this.data[i]);
-			}
 		};
+	}
+}
+
+LocalDatabase.prototype.add = function (data) {
+	for (var i in data) {
+		//console.log(this.data[i]);
+	    this.customerObjectStore.add(data[i]);
 	}
 }
 

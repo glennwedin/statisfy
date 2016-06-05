@@ -51500,6 +51500,7 @@
 	*/
 
 	function getTopArtists(user) {
+		var db = new _LocalDatabase2.default('artists');
 		return function (dispatch) {
 			var page = 1,
 			    total = 1,
@@ -51516,17 +51517,35 @@
 						page++;
 						recursive();
 					} else {
-						new _LocalDatabase2.default('artists', result);
-						dispatch(receiveTopArtists(user, json.topartists));
+						db.add(result);
+						//dispatch(receiveTopArtists(user, json.topartists))
 						//console.log(result)
 					}
 				}).catch(function (err) {
 					console.log(err);
 				});
 			};
+
+			//request data from localdb
+
+			//or fetch and insert
 			recursive();
 		};
 	}
+
+	/*
+	export function getFriends(user) {
+		return function (dispatch) {
+			fetch('http://ws.audioscrobbler.com/2.0/?method=user.getfriends&user='+user+'&api_key=484711f72a2c24bf969ab0e30abe3d6a&format=json')
+			.then(response => response.json())
+			.then(json => {
+
+			}).catch(err => {
+				console.log(err);
+			})
+		}
+	}
+	*/
 
 /***/ },
 /* 333 */
@@ -51537,11 +51556,11 @@
 	Object.defineProperty(exports, "__esModule", {
 		value: true
 	});
-	var LocalDatabase = function LocalDatabase(databasename, data) {
+	var LocalDatabase = function LocalDatabase(databasename) {
 		var _this = this;
 
-		this.data = data;
 		this.db = window.indexedDB.open(databasename, 4);
+		this.customerObjectStore;
 		this.db.onerror = function (err) {
 			console.log(err);
 		};
@@ -51563,12 +51582,15 @@
 				// Store values in the newly created objectStore.
 				console.log('transaction complete');
 				_this.customerObjectStore = db.transaction("artists", "readwrite").objectStore("artists");
-				for (var i in _this.data) {
-					//console.log(this.data[i]);
-					_this.customerObjectStore.add(_this.data[i]);
-				}
 			};
 		};
+	};
+
+	LocalDatabase.prototype.add = function (data) {
+		for (var i in data) {
+			//console.log(this.data[i]);
+			this.customerObjectStore.add(data[i]);
+		}
 	};
 
 	exports.default = LocalDatabase;
