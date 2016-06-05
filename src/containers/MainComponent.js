@@ -17,7 +17,6 @@ class MainComponent extends React.Component {
 	}
 
 	componentDidMount() {
-		//console.log('test')
 		store.subscribe(() => {
 			this.setState({
 				loading: store.getState().stats.isFetching,

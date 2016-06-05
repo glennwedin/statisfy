@@ -25,7 +25,6 @@ class LatestStats extends React.Component {
 				if(el['@attr']) {
 					date = "Now";
 				} else if(el.date) {
-					//console.log(el.date['#text'], moment(el.date['#text'], 'D MMM Y HH:mm').format('DD.MM.YYYY - HH:mm'));
 					if(moment(el.date['#text'], 'D MMM Y HH:mm').format('YYYY-MM-DD') == moment().format('YYYY-MM-DD')) {
 						time = "";
 						date = moment(el.date['#text'], 'D MMM Y HH:mm').format('HH:mm');

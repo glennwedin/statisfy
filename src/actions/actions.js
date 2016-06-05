@@ -103,14 +103,14 @@ export function getTopArtists(user, count, page) {
 	}
 }
 */
-
 export function getTopArtists(user) {
-	let db = new LocalDatabase('artists');
 	return function (dispatch) {
+		//Dispatch building indexes notification
 		let page = 1,
 		total = 1,
 		result = [];
 
+		let db = new LocalDatabase('artists');
 		let recursive = () => {
 			fetch('http://ws.audioscrobbler.com/2.0/?method=user.gettopartists&user='+user+'&limit=200&page='+page+'&api_key=484711f72a2c24bf969ab0e30abe3d6a&format=json')
 			.then(response => response.json())
@@ -121,8 +121,9 @@ export function getTopArtists(user) {
 					page++;
 					recursive();
 				} else {
-					db.add(result);
-					//dispatch(receiveTopArtists(user, json.topartists))
+					console.log('adding')
+					db.add('artists', result);
+					dispatch(receiveTopArtists(user, result))
 					//console.log(result)
 				}
 			}).catch(err => {
@@ -130,21 +131,59 @@ export function getTopArtists(user) {
 			})
 		}
 
-		//request data from localdb
-
+		//request data from localdb and dispatch
+		db.get('artists').then((result) => {
+			console.log('feil')
+			console.log(result)
+			dispatch(receiveTopArtists(user, result))
+			return true;
+		});
 		//or fetch and insert
 		recursive();
-
 	}
+}
+
+/*
+
+export function resetTopArtists(user) {
+	return function (dispatch) {
+		db.resetTopArtists();
+		dispatch(getTopArtists(user))
+	}
+}
+*/
+
+
+/**
+*	Fetch friends
+*/
+export const REQUEST_FRIENDS = 'REQUEST_FRIENDS'
+function requestFriends(user) {
+  return {
+    type: REQUEST_FRIENDS,
+    user
+  }
+}
+
+//deprecated ?
+export const RECEIVE_FRIENDS = 'RECEIVE_FRIENDS'
+function receiveFriends(user, json) {
+  return {
+    type: RECEIVE_FRIENDS,
+    user,
+    artiststats: json,
+    receivedAt: Date.now()
+  }
 }
 
 /*
 export function getFriends(user) {
 	return function (dispatch) {
+		dispatch(requestFriends);
 		fetch('http://ws.audioscrobbler.com/2.0/?method=user.getfriends&user='+user+'&api_key=484711f72a2c24bf969ab0e30abe3d6a&format=json')
 		.then(response => response.json())
 		.then(json => {
-
+			dispatch(receiveFriends(json));
 		}).catch(err => {
 			console.log(err);
 		})

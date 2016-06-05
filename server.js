@@ -49399,7 +49399,6 @@
 			value: function componentDidMount() {
 				var _this2 = this;
 
-				//console.log('test')
 				_Store2.default.subscribe(function () {
 					_this2.setState({
 						loading: _Store2.default.getState().stats.isFetching,
@@ -51385,7 +51384,7 @@
 	Object.defineProperty(exports, "__esModule", {
 		value: true
 	});
-	exports.RECEIVE_TOP_ARTISTS = exports.REQUEST_TOP_ARTISTS = exports.RECEIVE_STATS = exports.REQUEST_STATS = exports.SET_USER = undefined;
+	exports.RECEIVE_FRIENDS = exports.REQUEST_FRIENDS = exports.RECEIVE_TOP_ARTISTS = exports.REQUEST_TOP_ARTISTS = exports.RECEIVE_STATS = exports.REQUEST_STATS = exports.SET_USER = undefined;
 	exports.setUser = setUser;
 	exports.getStats = getStats;
 	exports.getTopArtists = getTopArtists;
@@ -51498,14 +51497,14 @@
 		}
 	}
 	*/
-
 	function getTopArtists(user) {
-		var db = new _LocalDatabase2.default('artists');
 		return function (dispatch) {
+			//Dispatch building indexes notification
 			var page = 1,
 			    total = 1,
 			    result = [];
 
+			var db = new _LocalDatabase2.default('artists');
 			var recursive = function recursive() {
 				fetch('http://ws.audioscrobbler.com/2.0/?method=user.gettopartists&user=' + user + '&limit=200&page=' + page + '&api_key=484711f72a2c24bf969ab0e30abe3d6a&format=json').then(function (response) {
 					return response.json();
@@ -51517,8 +51516,9 @@
 						page++;
 						recursive();
 					} else {
-						db.add(result);
-						//dispatch(receiveTopArtists(user, json.topartists))
+						console.log('adding');
+						db.add('artists', result);
+						dispatch(receiveTopArtists(user, result));
 						//console.log(result)
 					}
 				}).catch(function (err) {
@@ -51526,20 +51526,58 @@
 				});
 			};
 
-			//request data from localdb
-
+			//request data from localdb and dispatch
+			db.get('artists').then(function (result) {
+				console.log('feil');
+				console.log(result);
+				dispatch(receiveTopArtists(user, result));
+				return true;
+			});
 			//or fetch and insert
 			recursive();
 		};
 	}
 
 	/*
+
+	export function resetTopArtists(user) {
+		return function (dispatch) {
+			db.resetTopArtists();
+			dispatch(getTopArtists(user))
+		}
+	}
+	*/
+
+	/**
+	*	Fetch friends
+	*/
+	var REQUEST_FRIENDS = exports.REQUEST_FRIENDS = 'REQUEST_FRIENDS';
+	function requestFriends(user) {
+		return {
+			type: REQUEST_FRIENDS,
+			user: user
+		};
+	}
+
+	//deprecated ?
+	var RECEIVE_FRIENDS = exports.RECEIVE_FRIENDS = 'RECEIVE_FRIENDS';
+	function receiveFriends(user, json) {
+		return {
+			type: RECEIVE_FRIENDS,
+			user: user,
+			artiststats: json,
+			receivedAt: Date.now()
+		};
+	}
+
+	/*
 	export function getFriends(user) {
 		return function (dispatch) {
+			dispatch(requestFriends);
 			fetch('http://ws.audioscrobbler.com/2.0/?method=user.getfriends&user='+user+'&api_key=484711f72a2c24bf969ab0e30abe3d6a&format=json')
 			.then(response => response.json())
 			.then(json => {
-
+				dispatch(receiveFriends(json));
 			}).catch(err => {
 				console.log(err);
 			})
@@ -51557,21 +51595,18 @@
 		value: true
 	});
 	var LocalDatabase = function LocalDatabase(databasename) {
-		var _this = this;
-
-		this.db = window.indexedDB.open(databasename, 4);
-		this.customerObjectStore;
+		this.db = indexedDB.open(databasename, 1);
 		this.db.onerror = function (err) {
 			console.log(err);
 		};
 		this.db.onsuccess = function () {
-			console.log('Data inserted');
+			//console.log('Data inserted')
 		};
 
 		this.db.onupgradeneeded = function (evt) {
 			var db = evt.target.result;
 
-			var objectStore = db.createObjectStore("artists", { keyPath: "name" });
+			var objectStore = db.createObjectStore("artists", { autoIncrement: true });
 			// Create an index to search customers by name. We may have duplicates
 			// so we can't use a unique index.
 			objectStore.createIndex("name", "name", { unique: false });
@@ -51581,16 +51616,37 @@
 			objectStore.transaction.oncomplete = function (event) {
 				// Store values in the newly created objectStore.
 				console.log('transaction complete');
-				_this.customerObjectStore = db.transaction("artists", "readwrite").objectStore("artists");
+				objectStore = db.transaction("artists", "readwrite").objectStore("artists");
 			};
 		};
 	};
 
-	LocalDatabase.prototype.add = function (data) {
+	LocalDatabase.prototype.add = function (databasename, data) {
+		var db = indexedDB.open(databasename, 1);
 		for (var i in data) {
-			//console.log(this.data[i]);
-			this.customerObjectStore.add(data[i]);
+			console.log(data[i]);
+			var transaction = db.transaction(['artists']);
+			var objectStore = transaction.objectStore("artists");
+			objectStore.add(data[i]).onsuccess = function () {
+				console.log('Lagrer ' + data[i].name);
+			};
 		}
+	};
+
+	LocalDatabase.prototype.get = function (databasename) {
+		var db = indexedDB.open(databasename, 1);
+		return new Promise(function (resolve, reject) {
+			var transaction = db.transaction([databasename]);
+			var objectStore = transaction.objectStore(databasename);
+			var request = objectStore.get().onsuccess = function (event) {
+				console.log('jmm');
+				resolve(request.result);
+			};
+		});
+	};
+
+	LocalDatabase.prototype.resetTopArtists = function () {
+		window.indexedDB.deleteDatabase("artists");
 	};
 
 	exports.default = LocalDatabase;
@@ -51988,7 +52044,6 @@
 						if (el['@attr']) {
 							date = "Now";
 						} else if (el.date) {
-							//console.log(el.date['#text'], moment(el.date['#text'], 'D MMM Y HH:mm').format('DD.MM.YYYY - HH:mm'));
 							if ((0, _moment2.default)(el.date['#text'], 'D MMM Y HH:mm').format('YYYY-MM-DD') == (0, _moment2.default)().format('YYYY-MM-DD')) {
 								time = "";
 								date = (0, _moment2.default)(el.date['#text'], 'D MMM Y HH:mm').format('HH:mm');
