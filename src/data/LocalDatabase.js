@@ -1,52 +1,75 @@
-let LocalDatabase = function (databasename) {
-	this.db = indexedDB.open(databasename, 1);
-	this.db.onerror = function (err) {
-		console.log(err)
-	}
-	this.db.onsuccess = function () {
-		//console.log('Data inserted')
-	}
+let LocalDatabase = function () {
+	this.db = null;
+}
 
-	this.db.onupgradeneeded = (evt) => {
-		var db = evt.target.result;
+LocalDatabase.prototype.open = function (databasename) {
+	return new Promise((resolve) => {
+		let request = indexedDB.open(databasename, 1);
+		
+		request.onerror = (err) => {
+			console.log(err)
+		}
 
-		let objectStore = db.createObjectStore("artists", { autoIncrement: true });
-		// Create an index to search customers by name. We may have duplicates
-		// so we can't use a unique index.
-		objectStore.createIndex("name", "name", { unique: false });
+		request.onsuccess = (e) => {
+			console.log('opened');
+			this.db = e.target.result;
+			resolve(true);
+		}
 
-		// Use transaction oncomplete to make sure the objectStore creation is 
-		// finished before adding data into it.
-		objectStore.transaction.oncomplete = (event) => {
-		// Store values in the newly created objectStore.
-			console.log('transaction complete')
-			objectStore = db.transaction("artists", "readwrite").objectStore("artists");
-		};
-	}
+		request.onupgradeneeded = (e) => {
+	        console.log ("Going to upgrade our DB");
+	        this.db = e.target.result;
+	        if(this.db.objectStoreNames.contains("artists")) {
+	    	    this.db.deleteObjectStore("artists");
+	        }
+	        let store = this.db.createObjectStore("artists", {autoIncrement: true});
+
+	        request.onfailure = this.onerror;
+	        request.onerror = function(e) {
+	        	console.error("Err:"+e);
+	        }
+	    }
+    })
 }
 
 LocalDatabase.prototype.add = function (databasename, data) {
-	let db = indexedDB.open(databasename, 1);
-	for (var i in data) {
-		console.log(data[i]);
-		let transaction = db.transaction(['artists']);
-	    let objectStore = transaction.objectStore("artists")
-	    objectStore.add(data[i]).onsuccess = () => {
-	    	console.log('Lagrer '+data[i].name);
+	//console.log('add', this.db)
+	let trans = this.db.transaction(['artists'], 'readwrite');
+	let objectStore = trans.objectStore("artists");
+
+	data.forEach((d, i) => {
+		console.log(d);
+		let request = objectStore.put(d);
+	    request.onsuccess = function(e) {
+	    	console.log('data added');
 	    };
-	}
+	    request.onerror = function(e) {
+	        console.error("Error Adding an item: ", e);
+	    };
+	});
 }
 
 LocalDatabase.prototype.get = function (databasename) {
-	let db = indexedDB.open(databasename, 1);
-	return new Promise((resolve, reject) => {
-		let transaction = db.transaction([databasename]);
-		var objectStore = transaction.objectStore(databasename);
-		var request = objectStore.get().onsuccess = function (event) {
-			console.log('jmm')
-			resolve(request.result);
-		}
-	})
+	return new Promise((resolve) => {
+		console.log(this.db)
+		let finalResult = [];
+		let trans = this.db.transaction(["artists"], "readwrite");
+	    let store = trans.objectStore("artists");
+
+	    let keyRange = IDBKeyRange.lowerBound(0);
+	    let cursorRequest = store.openCursor(keyRange);
+
+	    cursorRequest.onsuccess = function(e) {
+	        var result = e.target.result;
+	        if(!!result == false) {
+	        	resolve(finalResult);
+	        	return;
+	        }
+	        //console.log(result.value);
+	        finalResult.push(result.value);
+	    	result.continue();
+	    };
+	});
 }
 
 LocalDatabase.prototype.resetTopArtists = function () {

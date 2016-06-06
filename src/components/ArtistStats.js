@@ -9,11 +9,17 @@ class ArtistStats extends React.Component {
 		super(props);
 
 		this.state = {
-			filter: []
+			filter: [],
+			currentpage: 1,
+			totalpages: 1,
+			prpage: 24
 		}
 	}
 
 	componentDidMount() {
+		this.setState({
+			totalpages: this.props.stats.topartiststats/this.state.prpage
+		});		
 	}
 
 	setPage(e) {
@@ -24,7 +30,7 @@ class ArtistStats extends React.Component {
 
 	next() {
 		let page = parseInt(this.props.page) || 1,
-		total = parseInt(this.props.stats.topartiststats['@attr'].totalPages);
+		total = parseInt(this.props.stats.topartiststats/24);
 
 		if(page < total) {
 			page += 1;
@@ -44,19 +50,19 @@ class ArtistStats extends React.Component {
 	}
 
 	pagination() {
-		if(this.props.stats.topartiststats.artist) {
-			let totalPages = this.props.stats.topartiststats['@attr'].totalPages;
+		if(this.props.stats.topartiststats) {
+			//let totalPages = this.props.stats.topartiststats/24; //this.props.stats.topartiststats['@attr'].totalPages;
 
 			let first = [],
 				middle = [],
 				last = [];
 
-			let x =  (this.props.page-10) >= 1 ? this.props.page-10 : 1;
+			let x =  (this.props.currentpage-10) >= 1 ? this.props.page-10 : 1;
 			let y = 0;
-			for(x, y = 0; y < 20 && y < totalPages; x++,y++) {
+			for(x, y = 0; y < 20 && y < this.state.totalpages; x++,y++) {
 				first.push(<div key={x} className="p" onClick={this.setPage.bind(this)}>{x}</div>)
 			}
-			last.push(<div key="sdfsdgwrgw" className="p"> &raquo; {totalPages}</div>)
+			last.push(<div key="sdfsdgwrgw" className="p"> &raquo; {this.state.totalpages}</div>)
 
 			return (
 				<div className="pagination">
@@ -79,9 +85,9 @@ class ArtistStats extends React.Component {
 
 		let f = this.state.filter;
 		f = [];
-		this.props.stats.topartiststats.artist.filter((obj, i) => {
-			//console.log(obj.name)
-			if((obj.name.toLowerCase()).indexOf(value.toLowerCase()) > -1) {
+		this.props.stats.topartiststats.filter((obj, i) => {			
+			if(value.length > 3 && (obj.name.toLowerCase()).indexOf(value.toLowerCase()) > -1) {
+				if(f.length >= 24) { return f; }
 				f.push(obj);
 			}
 		})
@@ -101,8 +107,9 @@ class ArtistStats extends React.Component {
 					</div>
 				)
 			})
-		} else if(this.props.stats.topartiststats.artist) {
-			artistGrid = this.props.stats.topartiststats.artist.map((a, i) => {
+		} else if(this.props.stats.topartiststats) {
+			artistGrid = this.props.stats.topartiststats.map((a, i) => {
+				if(i >= this.state.prpage) { return; }
 				return (
 					<div className="column artist-grid-item" style={{backgroundImage:'url('+a.image[2]['#text']+')'}} key={i}>
 						<div className="title">{ a.name }</div>

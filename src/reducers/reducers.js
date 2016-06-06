@@ -33,6 +33,7 @@ function stats(state = {
 				didInvalidate: false 
 			});
 		case RECEIVE_TOP_ARTISTS:
+		console.log(action.artiststats)
 			return Object.assign({}, state, {
 				isFetching: false,
 				didInvalidate: false,

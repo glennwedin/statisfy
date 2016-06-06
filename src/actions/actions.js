@@ -87,22 +87,6 @@ function receiveTopArtists(user, json) {
   }
 }
 
-//Deprecated
-/*
-export function getTopArtists(user, count, page) {
-	return function (dispatch) {
-		dispatch(requestTopArtists(user))
-		return fetch('http://ws.audioscrobbler.com/2.0/?method=user.gettopartists&user='+user+'&limit='+count+'&page='+page+'&api_key=484711f72a2c24bf969ab0e30abe3d6a&format=json')
-			.then(response => response.json())
-			.then(json => {
-				new LocalDatabase('artists', json);
-				dispatch(receiveTopArtists(user, json.topartists))
-			}).catch(err => {
-			console.log(err)
-		});
-	}
-}
-*/
 export function getTopArtists(user) {
 	return function (dispatch) {
 		//Dispatch building indexes notification
@@ -110,36 +94,41 @@ export function getTopArtists(user) {
 		total = 1,
 		result = [];
 
-		let db = new LocalDatabase('artists');
-		let recursive = () => {
-			fetch('http://ws.audioscrobbler.com/2.0/?method=user.gettopartists&user='+user+'&limit=200&page='+page+'&api_key=484711f72a2c24bf969ab0e30abe3d6a&format=json')
-			.then(response => response.json())
-			.then(json => {
-				total = json.topartists['@attr'].totalPages;
-				result = result.concat(json.topartists.artist);
-				if(page < total && page < 2) { //FIKS
-					page++;
-					recursive();
-				} else {
-					console.log('adding')
-					db.add('artists', result);
-					dispatch(receiveTopArtists(user, result))
-					//console.log(result)
-				}
-			}).catch(err => {
-				console.log(err);
-			})
-		}
+		let db = new LocalDatabase();
+			db.open('artists').then(() => {
 
-		//request data from localdb and dispatch
-		db.get('artists').then((result) => {
-			console.log('feil')
-			console.log(result)
-			dispatch(receiveTopArtists(user, result))
-			return true;
+			let recursive = () => {
+				fetch('http://ws.audioscrobbler.com/2.0/?method=user.gettopartists&user='+user+'&limit=200&page='+page+'&api_key=484711f72a2c24bf969ab0e30abe3d6a&format=json')
+				.then(response => response.json())
+				.then(json => {
+					total = json.topartists['@attr'].totalPages;
+					result = result.concat(json.topartists.artist);
+					if(page < total) { 
+						page++;
+						recursive();
+					} else {
+						db.add('artists', result);
+						dispatch(receiveTopArtists(user, result))
+						//console.log(result)
+					}
+				}).catch(err => {
+					console.log(err);
+				})
+			}
+
+			//request data from localdb and dispatch
+			db.get('artists').then((result) => {
+				if(result.length > 0) {
+					//console.log('res', user, result.length)
+					dispatch(receiveTopArtists(user, result))
+				} else{
+					recursive();
+				}
+			});
+			
+			//or fetch and insert
+			
 		});
-		//or fetch and insert
-		recursive();
 	}
 }
 

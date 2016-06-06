@@ -27616,6 +27616,7 @@
 					didInvalidate: false
 				});
 			case _actions.RECEIVE_TOP_ARTISTS:
+				console.log(action.artiststats);
 				return Object.assign({}, state, {
 					isFetching: false,
 					didInvalidate: false,
@@ -27756,22 +27757,6 @@
 		};
 	}
 
-	//Deprecated
-	/*
-	export function getTopArtists(user, count, page) {
-		return function (dispatch) {
-			dispatch(requestTopArtists(user))
-			return fetch('http://ws.audioscrobbler.com/2.0/?method=user.gettopartists&user='+user+'&limit='+count+'&page='+page+'&api_key=484711f72a2c24bf969ab0e30abe3d6a&format=json')
-				.then(response => response.json())
-				.then(json => {
-					new LocalDatabase('artists', json);
-					dispatch(receiveTopArtists(user, json.topartists))
-				}).catch(err => {
-				console.log(err)
-			});
-		}
-	}
-	*/
 	function getTopArtists(user) {
 		return function (dispatch) {
 			//Dispatch building indexes notification
@@ -27779,37 +27764,40 @@
 			    total = 1,
 			    result = [];
 
-			var db = new _LocalDatabase2.default('artists');
-			var recursive = function recursive() {
-				fetch('http://ws.audioscrobbler.com/2.0/?method=user.gettopartists&user=' + user + '&limit=200&page=' + page + '&api_key=484711f72a2c24bf969ab0e30abe3d6a&format=json').then(function (response) {
-					return response.json();
-				}).then(function (json) {
-					total = json.topartists['@attr'].totalPages;
-					result = result.concat(json.topartists.artist);
-					if (page < total && page < 2) {
-						//FIKS
-						page++;
-						recursive();
-					} else {
-						console.log('adding');
-						db.add('artists', result);
-						dispatch(receiveTopArtists(user, result));
-						//console.log(result)
-					}
-				}).catch(function (err) {
-					console.log(err);
-				});
-			};
+			var db = new _LocalDatabase2.default();
+			db.open('artists').then(function () {
 
-			//request data from localdb and dispatch
-			db.get('artists').then(function (result) {
-				console.log('feil');
-				console.log(result);
-				dispatch(receiveTopArtists(user, result));
-				return true;
+				var recursive = function recursive() {
+					fetch('http://ws.audioscrobbler.com/2.0/?method=user.gettopartists&user=' + user + '&limit=200&page=' + page + '&api_key=484711f72a2c24bf969ab0e30abe3d6a&format=json').then(function (response) {
+						return response.json();
+					}).then(function (json) {
+						total = json.topartists['@attr'].totalPages;
+						result = result.concat(json.topartists.artist);
+						if (page < total) {
+							page++;
+							recursive();
+						} else {
+							db.add('artists', result);
+							dispatch(receiveTopArtists(user, result));
+							//console.log(result)
+						}
+					}).catch(function (err) {
+						console.log(err);
+					});
+				};
+
+				//request data from localdb and dispatch
+				db.get('artists').then(function (result) {
+					if (result.length > 0) {
+						//console.log('res', user, result.length)
+						dispatch(receiveTopArtists(user, result));
+					} else {
+						recursive();
+					}
+				});
+
+				//or fetch and insert
 			});
-			//or fetch and insert
-			recursive();
 		};
 	}
 
@@ -27869,53 +27857,80 @@
 	Object.defineProperty(exports, "__esModule", {
 		value: true
 	});
-	var LocalDatabase = function LocalDatabase(databasename) {
-		this.db = indexedDB.open(databasename, 1);
-		this.db.onerror = function (err) {
-			console.log(err);
-		};
-		this.db.onsuccess = function () {
-			//console.log('Data inserted')
-		};
+	var LocalDatabase = function LocalDatabase() {
+		this.db = null;
+	};
 
-		this.db.onupgradeneeded = function (evt) {
-			var db = evt.target.result;
+	LocalDatabase.prototype.open = function (databasename) {
+		var _this = this;
 
-			var objectStore = db.createObjectStore("artists", { autoIncrement: true });
-			// Create an index to search customers by name. We may have duplicates
-			// so we can't use a unique index.
-			objectStore.createIndex("name", "name", { unique: false });
+		return new Promise(function (resolve) {
+			var request = indexedDB.open(databasename, 1);
 
-			// Use transaction oncomplete to make sure the objectStore creation is
-			// finished before adding data into it.
-			objectStore.transaction.oncomplete = function (event) {
-				// Store values in the newly created objectStore.
-				console.log('transaction complete');
-				objectStore = db.transaction("artists", "readwrite").objectStore("artists");
+			request.onerror = function (err) {
+				console.log(err);
 			};
-		};
+
+			request.onsuccess = function (e) {
+				console.log('opened');
+				_this.db = e.target.result;
+				resolve(true);
+			};
+
+			request.onupgradeneeded = function (e) {
+				console.log("Going to upgrade our DB");
+				_this.db = e.target.result;
+				if (_this.db.objectStoreNames.contains("artists")) {
+					_this.db.deleteObjectStore("artists");
+				}
+				var store = _this.db.createObjectStore("artists", { autoIncrement: true });
+
+				request.onfailure = _this.onerror;
+				request.onerror = function (e) {
+					console.error("Err:" + e);
+				};
+			};
+		});
 	};
 
 	LocalDatabase.prototype.add = function (databasename, data) {
-		var db = indexedDB.open(databasename, 1);
-		for (var i in data) {
-			console.log(data[i]);
-			var transaction = db.transaction(['artists']);
-			var objectStore = transaction.objectStore("artists");
-			objectStore.add(data[i]).onsuccess = function () {
-				console.log('Lagrer ' + data[i].name);
+		//console.log('add', this.db)
+		var trans = this.db.transaction(['artists'], 'readwrite');
+		var objectStore = trans.objectStore("artists");
+
+		data.forEach(function (d, i) {
+			console.log(d);
+			var request = objectStore.put(d);
+			request.onsuccess = function (e) {
+				console.log('data added');
 			};
-		}
+			request.onerror = function (e) {
+				console.error("Error Adding an item: ", e);
+			};
+		});
 	};
 
 	LocalDatabase.prototype.get = function (databasename) {
-		var db = indexedDB.open(databasename, 1);
-		return new Promise(function (resolve, reject) {
-			var transaction = db.transaction([databasename]);
-			var objectStore = transaction.objectStore(databasename);
-			var request = objectStore.get().onsuccess = function (event) {
-				console.log('jmm');
-				resolve(request.result);
+		var _this2 = this;
+
+		return new Promise(function (resolve) {
+			console.log(_this2.db);
+			var finalResult = [];
+			var trans = _this2.db.transaction(["artists"], "readwrite");
+			var store = trans.objectStore("artists");
+
+			var keyRange = IDBKeyRange.lowerBound(0);
+			var cursorRequest = store.openCursor(keyRange);
+
+			cursorRequest.onsuccess = function (e) {
+				var result = e.target.result;
+				if (!!result == false) {
+					resolve(finalResult);
+					return;
+				}
+				//console.log(result.value);
+				finalResult.push(result.value);
+				result.continue();
 			};
 		});
 	};
@@ -42328,14 +42343,21 @@
 			var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ArtistStats).call(this, props));
 
 			_this.state = {
-				filter: []
+				filter: [],
+				currentpage: 1,
+				totalpages: 1,
+				prpage: 24
 			};
 			return _this;
 		}
 
 		_createClass(ArtistStats, [{
 			key: 'componentDidMount',
-			value: function componentDidMount() {}
+			value: function componentDidMount() {
+				this.setState({
+					totalpages: this.props.stats.topartiststats / this.state.prpage
+				});
+			}
 		}, {
 			key: 'setPage',
 			value: function setPage(e) {
@@ -42347,7 +42369,7 @@
 			key: 'next',
 			value: function next() {
 				var page = parseInt(this.props.page) || 1,
-				    total = parseInt(this.props.stats.topartiststats['@attr'].totalPages);
+				    total = parseInt(this.props.stats.topartiststats / 24);
 
 				if (page < total) {
 					page += 1;
@@ -42369,16 +42391,16 @@
 		}, {
 			key: 'pagination',
 			value: function pagination() {
-				if (this.props.stats.topartiststats.artist) {
-					var totalPages = this.props.stats.topartiststats['@attr'].totalPages;
+				if (this.props.stats.topartiststats) {
+					//let totalPages = this.props.stats.topartiststats/24; //this.props.stats.topartiststats['@attr'].totalPages;
 
 					var first = [],
 					    middle = [],
 					    last = [];
 
-					var x = this.props.page - 10 >= 1 ? this.props.page - 10 : 1;
+					var x = this.props.currentpage - 10 >= 1 ? this.props.page - 10 : 1;
 					var y = 0;
-					for (x, y = 0; y < 20 && y < totalPages; x++, y++) {
+					for (x, y = 0; y < 20 && y < this.state.totalpages; x++, y++) {
 						first.push(_react2.default.createElement(
 							'div',
 							{ key: x, className: 'p', onClick: this.setPage.bind(this) },
@@ -42389,7 +42411,7 @@
 						'div',
 						{ key: 'sdfsdgwrgw', className: 'p' },
 						' » ',
-						totalPages
+						this.state.totalpages
 					));
 
 					return _react2.default.createElement(
@@ -42444,9 +42466,11 @@
 
 				var f = this.state.filter;
 				f = [];
-				this.props.stats.topartiststats.artist.filter(function (obj, i) {
-					//console.log(obj.name)
-					if (obj.name.toLowerCase().indexOf(value.toLowerCase()) > -1) {
+				this.props.stats.topartiststats.filter(function (obj, i) {
+					if (value.length > 3 && obj.name.toLowerCase().indexOf(value.toLowerCase()) > -1) {
+						if (f.length >= 24) {
+							return f;
+						}
 						f.push(obj);
 					}
 				});
@@ -42457,6 +42481,8 @@
 		}, {
 			key: 'render',
 			value: function render() {
+				var _this2 = this;
+
 				var artistGrid = "";
 				if (this.state.filter.length > 0) {
 					artistGrid = this.state.filter.map(function (a, i) {
@@ -42475,8 +42501,11 @@
 							)
 						);
 					});
-				} else if (this.props.stats.topartiststats.artist) {
-					artistGrid = this.props.stats.topartiststats.artist.map(function (a, i) {
+				} else if (this.props.stats.topartiststats) {
+					artistGrid = this.props.stats.topartiststats.map(function (a, i) {
+						if (i >= _this2.state.prpage) {
+							return;
+						}
 						return _react2.default.createElement(
 							'div',
 							{ className: 'column artist-grid-item', style: { backgroundImage: 'url(' + a.image[2]['#text'] + ')' }, key: i },
