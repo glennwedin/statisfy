@@ -1,8 +1,21 @@
 import React from 'react';
-import { Link } from 'react-router';
+import { Link, browserHistory } from 'react-router';
 import { connect } from 'react-redux';
+import { setUser } from '../actions/actions';
 
 class TopMenu extends React.Component {
+
+	constructor (props) {
+		super(props);
+	}
+
+	leave(e) {
+		e.preventDefault();
+		window.localStorage.removeItem('statisfy:username');
+		this.props.dispatch(setUser(null));
+		browserHistory.push('/');
+	}
+
 	render () {
 		return (
 			<div className="topmenu">
@@ -20,7 +33,7 @@ class TopMenu extends React.Component {
 									<Link to="/artists">My artists</Link>
 								</li>
 								<li>
-									<Link to="/"></Link>
+									<a href="" onClick={this.leave.bind(this)}>Leave this user</a>
 								</li>
 								<li>
 									<Link to="/"></Link>
@@ -34,9 +47,6 @@ class TopMenu extends React.Component {
 	}
 }
 
-function mapStateToProps(state) {
-	return { todos: state.todos }
-}
 
-TopMenu = connect(mapStateToProps)(TopMenu);
+TopMenu = connect(state => state)(TopMenu);
 export default TopMenu;

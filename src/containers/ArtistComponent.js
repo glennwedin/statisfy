@@ -14,6 +14,7 @@ class ArtistComponent extends React.Component {
 	}
 
 	componentDidMount() {
+		console.info('mount: ArtistComponent')
 		if(this.props.location.query.page) {
 			this.setState({
 				page: this.props.location.query.page
@@ -21,13 +22,13 @@ class ArtistComponent extends React.Component {
 		}
 
 		if(this.props.user.username) {
-			this.props.dispatch(getTopArtists(this.props.user.username, 24, this.state.page));
+			this.props.dispatch(getTopArtists(this.props.user.username));
 		}
 	}
 
 	componentDidUpdate(prevProps, prevState) {
 		if(prevProps.user.username !== this.props.user.username) {
-			this.props.dispatch(getTopArtists(this.props.user.username, 24, this.state.page));
+			this.props.dispatch(getTopArtists(this.props.user.username));
 		}
 	}
 

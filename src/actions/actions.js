@@ -132,15 +132,14 @@ export function getTopArtists(user) {
 	}
 }
 
-/*
 
 export function resetTopArtists(user) {
 	return function (dispatch) {
-		db.resetTopArtists();
-		dispatch(getTopArtists(user))
+		window.indexedDB.deleteDatabase('artists');
+		dispatch(getTopArtists(user));
 	}
 }
-*/
+
 
 
 /**

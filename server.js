@@ -49372,6 +49372,10 @@
 
 	var _TopMenu2 = _interopRequireDefault(_TopMenu);
 
+	var _LocalDatabase = __webpack_require__(333);
+
+	var _LocalDatabase2 = _interopRequireDefault(_LocalDatabase);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -49405,11 +49409,42 @@
 						username: _Store2.default.getState().user.username
 					});
 				});
+				var username = this.checkUsername();
+				if (username) {
+					_Store2.default.dispatch((0, _actions.setUser)(username));
+				} else {
+					var db = new _LocalDatabase2.default();
+					db.resetTopArtists();
+				}
+			}
+
+			//FIKS SLETTING AV DB HER
+
+		}, {
+			key: "componentDidUpdate",
+			value: function componentDidUpdate(prevProps, prevState) {
+				//reset database if no user
+				/*
+	   let username = this.checkUsername();
+	   if(!username) {
+	   	let db = new LocalDatabase();
+	   	db.resetTopArtists();
+	   } 
+	   		*/
+			}
+		}, {
+			key: "checkUsername",
+			value: function checkUsername() {
+				if (window.localStorage.getItem('statisfy:username')) {
+					return window.localStorage.getItem('statisfy:username');
+				}
+				return false;
 			}
 		}, {
 			key: "setUsername",
 			value: function setUsername() {
 				var username = document.getElementById('username').value;
+				window.localStorage.setItem('statisfy:username', username);
 				_Store2.default.dispatch((0, _actions.setUser)(username));
 			}
 		}, {
@@ -51389,6 +51424,7 @@
 	exports.setUser = setUser;
 	exports.getStats = getStats;
 	exports.getTopArtists = getTopArtists;
+	exports.resetTopArtists = resetTopArtists;
 
 	var _LocalDatabase = __webpack_require__(333);
 
@@ -51526,15 +51562,12 @@
 		};
 	}
 
-	/*
-
-	export function resetTopArtists(user) {
+	function resetTopArtists(user) {
 		return function (dispatch) {
-			db.resetTopArtists();
-			dispatch(getTopArtists(user))
-		}
+			window.indexedDB.deleteDatabase('artists');
+			dispatch(getTopArtists(user));
+		};
 	}
-	*/
 
 	/**
 	*	Fetch friends
@@ -51686,6 +51719,8 @@
 
 	var _reactRedux = __webpack_require__(308);
 
+	var _actions = __webpack_require__(332);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -51697,13 +51732,21 @@
 	var TopMenu = function (_React$Component) {
 		_inherits(TopMenu, _React$Component);
 
-		function TopMenu() {
+		function TopMenu(props) {
 			_classCallCheck(this, TopMenu);
 
-			return _possibleConstructorReturn(this, Object.getPrototypeOf(TopMenu).apply(this, arguments));
+			return _possibleConstructorReturn(this, Object.getPrototypeOf(TopMenu).call(this, props));
 		}
 
 		_createClass(TopMenu, [{
+			key: 'leave',
+			value: function leave(e) {
+				e.preventDefault();
+				window.localStorage.removeItem('statisfy:username');
+				this.props.dispatch((0, _actions.setUser)(null));
+				_reactRouter.browserHistory.push('/');
+			}
+		}, {
 			key: 'render',
 			value: function render() {
 				return _react2.default.createElement(
@@ -51751,7 +51794,11 @@
 									_react2.default.createElement(
 										'li',
 										null,
-										_react2.default.createElement(_reactRouter.Link, { to: '/' })
+										_react2.default.createElement(
+											'a',
+											{ href: '', onClick: this.leave.bind(this) },
+											'Leave this user'
+										)
 									),
 									_react2.default.createElement(
 										'li',
@@ -51769,11 +51816,9 @@
 		return TopMenu;
 	}(_react2.default.Component);
 
-	function mapStateToProps(state) {
-		return { todos: state.todos };
-	}
-
-	TopMenu = (0, _reactRedux.connect)(mapStateToProps)(TopMenu);
+	TopMenu = (0, _reactRedux.connect)(function (state) {
+		return state;
+	})(TopMenu);
 	exports.default = TopMenu;
 
 /***/ },
@@ -51801,6 +51846,10 @@
 	var _LatestStats = __webpack_require__(337);
 
 	var _LatestStats2 = _interopRequireDefault(_LatestStats);
+
+	var _TopAlbums = __webpack_require__(442);
+
+	var _TopAlbums2 = _interopRequireDefault(_TopAlbums);
 
 	var _actions = __webpack_require__(332);
 
@@ -51847,6 +51896,16 @@
 						_react2.default.createElement(
 							'h1',
 							null,
+							'Recent tracks'
+						),
+						_react2.default.createElement(_LatestStats2.default, null)
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'small-12 medium-4 columns' },
+						_react2.default.createElement(
+							'h1',
+							null,
 							'Top tracks'
 						),
 						_react2.default.createElement(_UserStats2.default, null)
@@ -51857,14 +51916,9 @@
 						_react2.default.createElement(
 							'h1',
 							null,
-							'Recent tracks'
+							'Top albums'
 						),
-						_react2.default.createElement(_LatestStats2.default, null)
-					),
-					_react2.default.createElement(
-						'div',
-						{ className: 'small-12 medium-4 columns' },
-						' '
+						_react2.default.createElement(_TopAlbums2.default, null)
 					)
 				);
 			}
@@ -62318,6 +62372,7 @@
 		_createClass(ArtistComponent, [{
 			key: 'componentDidMount',
 			value: function componentDidMount() {
+				console.info('mount: ArtistComponent');
 				if (this.props.location.query.page) {
 					this.setState({
 						page: this.props.location.query.page
@@ -62325,14 +62380,14 @@
 				}
 
 				if (this.props.user.username) {
-					this.props.dispatch((0, _actions.getTopArtists)(this.props.user.username, 24, this.state.page));
+					this.props.dispatch((0, _actions.getTopArtists)(this.props.user.username));
 				}
 			}
 		}, {
 			key: 'componentDidUpdate',
 			value: function componentDidUpdate(prevProps, prevState) {
 				if (prevProps.user.username !== this.props.user.username) {
-					this.props.dispatch((0, _actions.getTopArtists)(this.props.user.username, 24, this.state.page));
+					this.props.dispatch((0, _actions.getTopArtists)(this.props.user.username));
 				}
 			}
 		}, {
@@ -62405,9 +62460,10 @@
 
 			var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ArtistStats).call(this, props));
 
+			console.log(props);
 			_this.state = {
 				filter: [],
-				currentpage: 1,
+				currentpage: props.page,
 				totalpages: 1,
 				prpage: 24
 			};
@@ -62418,51 +62474,65 @@
 			key: 'componentDidMount',
 			value: function componentDidMount() {
 				this.setState({
-					totalpages: this.props.stats.topartiststats / this.state.prpage
+					totalpages: this.props.stats.topartiststats.length / this.state.prpage
 				});
+			}
+		}, {
+			key: 'componentDidUpdate',
+			value: function componentDidUpdate(prevProps, prevState) {
+				if (this.props.stats.topartiststats.length !== prevProps.stats.topartiststats.length) {
+					this.setState({
+						totalpages: Math.ceil(this.props.stats.topartiststats.length / this.state.prpage)
+					});
+				}
 			}
 		}, {
 			key: 'setPage',
 			value: function setPage(e) {
 				var page = parseInt(e.target.innerHTML);
-				this.props.dispatch((0, _actions.getTopArtists)(this.props.user.username, 24, page));
+				this.setState({
+					currentpage: page
+				});
 				_reactRouter.browserHistory.push('/artists?page=' + page);
 			}
 		}, {
 			key: 'next',
 			value: function next() {
-				var page = parseInt(this.props.page) || 1,
-				    total = parseInt(this.props.stats.topartiststats / 24);
-
-				if (page < total) {
+				var page = parseInt(this.state.currentpage) || 1;
+				if (page < this.state.totalpages) {
 					page += 1;
-					this.props.dispatch((0, _actions.getTopArtists)(this.props.user.username, 24, page));
+					this.setState({
+						currentpage: page
+					});
 					_reactRouter.browserHistory.push('/artists?page=' + page);
 				}
 			}
 		}, {
 			key: 'previous',
 			value: function previous() {
-				var page = parseInt(this.props.page) || 1;
+				var page = parseInt(this.state.currentpage) || 1;
 
 				if (page > 1) {
 					page -= 1;
-					this.props.dispatch((0, _actions.getTopArtists)(this.props.user.username, 24, page));
+					this.setState({
+						currentpage: page
+					});
 					_reactRouter.browserHistory.push('/artists?page=' + page);
 				}
 			}
 		}, {
 			key: 'pagination',
 			value: function pagination() {
-				if (this.props.stats.topartiststats) {
-					//let totalPages = this.props.stats.topartiststats/24; //this.props.stats.topartiststats['@attr'].totalPages;
+				if (this.props.stats.topartiststats && this.state.filter.length === 0) {
+					//let totalpages = Math.ceil(this.props.stats.topartiststats.length/this.state.prpage) //this.props.stats.topartiststats['@attr'].totalPages;
 
 					var first = [],
 					    middle = [],
 					    last = [];
 
-					var x = this.props.currentpage - 10 >= 1 ? this.props.page - 10 : 1;
+					var x = this.state.currentpage - 10 >= 1 ? this.state.currentpage - 10 : 1;
 					var y = 0;
+
 					for (x, y = 0; y < 20 && y < this.state.totalpages; x++, y++) {
 						first.push(_react2.default.createElement(
 							'div',
@@ -62530,7 +62600,7 @@
 				var f = this.state.filter;
 				f = [];
 				this.props.stats.topartiststats.filter(function (obj, i) {
-					if (value.length > 3 && obj.name.toLowerCase().indexOf(value.toLowerCase()) > -1) {
+					if (obj.name.toLowerCase().indexOf(value.toLowerCase()) > -1) {
 						if (f.length >= 24) {
 							return f;
 						}
@@ -62541,12 +62611,24 @@
 					filter: f
 				});
 			}
+
+			//Not working. It only deletes the database...
+
+		}, {
+			key: 'refresh',
+			value: function refresh(e) {
+				e.preventDefault();
+				console.log(this.props.user.username);
+				window.indexedDB.deleteDatabase('artists');
+				this.props.dispatch((0, _actions.getTopArtists)(this.props.user.username));
+			}
 		}, {
 			key: 'render',
 			value: function render() {
 				var _this2 = this;
 
-				var artistGrid = "";
+				var artistGrid = "",
+				    pagecount = 0;
 				if (this.state.filter.length > 0) {
 					artistGrid = this.state.filter.map(function (a, i) {
 						return _react2.default.createElement(
@@ -62566,30 +62648,50 @@
 					});
 				} else if (this.props.stats.topartiststats) {
 					artistGrid = this.props.stats.topartiststats.map(function (a, i) {
-						if (i >= _this2.state.prpage) {
-							return;
+
+						//Test if "i" is less than amount pr pagte and that the page starts at correct item
+						/*if(pagecount >= this.state.prpage && ((this.state.currentpage*this.state.prpage)-this.state.prpage) > pagecount ) { 
+	     	return; 
+	     }*/
+						//console.log(this.state.currentpage*this.state.prpage)
+						if (pagecount < _this2.state.prpage && i >= _this2.state.currentpage * _this2.state.prpage - _this2.state.prpage) {
+							pagecount++;
+							return _react2.default.createElement(
+								'div',
+								{ className: 'column artist-grid-item', style: { backgroundImage: 'url(' + a.image[2]['#text'] + ')' }, key: i },
+								_react2.default.createElement(
+									'div',
+									{ className: 'title' },
+									a.name
+								),
+								_react2.default.createElement(
+									'div',
+									{ className: 'playcount' },
+									a.playcount
+								)
+							);
 						}
-						return _react2.default.createElement(
-							'div',
-							{ className: 'column artist-grid-item', style: { backgroundImage: 'url(' + a.image[2]['#text'] + ')' }, key: i },
-							_react2.default.createElement(
-								'div',
-								{ className: 'title' },
-								a.name
-							),
-							_react2.default.createElement(
-								'div',
-								{ className: 'playcount' },
-								a.playcount
-							)
-						);
 					});
 				}
 
+				//<a onClick={this.refresh.bind(this)}>Refresh</a>
 				return _react2.default.createElement(
 					'div',
 					null,
-					_react2.default.createElement('input', { type: 'text', name: 'search', placeholder: 'Filter this list', onChange: this.search.bind(this) }),
+					_react2.default.createElement(
+						'div',
+						{ className: 'row' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'small-12 medium-4 columns' },
+							_react2.default.createElement('input', { className: 'artist-filter', type: 'text', name: 'search', placeholder: 'Filter this list', onChange: this.search.bind(this) })
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'small-12 medium-4 columns' },
+							'refresh-knapp kommer her, fordi denne listen lagres i nettleserens database...'
+						)
+					),
 					_react2.default.createElement(
 						'div',
 						{ className: 'small-up-3 medium-up-3 large-up-8' },
@@ -62611,6 +62713,120 @@
 		return state;
 	})(ArtistStats);
 	exports.default = ArtistStats;
+
+/***/ },
+/* 442 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(82);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactRedux = __webpack_require__(308);
+
+	var _reactRouter = __webpack_require__(118);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var TopAlbums = function (_React$Component) {
+		_inherits(TopAlbums, _React$Component);
+
+		function TopAlbums(props) {
+			_classCallCheck(this, TopAlbums);
+
+			var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(TopAlbums).call(this, props));
+
+			_this.state = {};
+			return _this;
+		}
+
+		_createClass(TopAlbums, [{
+			key: 'render',
+			value: function render() {
+				console.log('albums', this.props);
+				var list = [];
+
+				if (this.props.stats.userstats.topalbums) {
+					var albumstat = this.props.stats.userstats.topalbums;
+					list = albumstat.album.map(function (el, i) {
+						return _react2.default.createElement(
+							'div',
+							{ key: i, className: 'tr' },
+							_react2.default.createElement(
+								'div',
+								{ className: 'td' },
+								_react2.default.createElement('div', { style: styles(el.image[1]['#text']) })
+							),
+							_react2.default.createElement(
+								'div',
+								{ className: 'td' },
+								_react2.default.createElement(
+									'div',
+									{ className: 'tablepad' },
+									el.name,
+									_react2.default.createElement('br', null),
+									_react2.default.createElement(
+										'strong',
+										null,
+										el.artist.name
+									)
+								)
+							),
+							_react2.default.createElement(
+								'div',
+								{ className: 'td' },
+								el.playcount
+							)
+						);
+					});
+				}
+
+				return _react2.default.createElement(
+					'div',
+					{ className: '' },
+					_react2.default.createElement(
+						'div',
+						{ className: 'table' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'tbody' },
+							list
+						)
+					)
+				);
+			}
+		}]);
+
+		return TopAlbums;
+	}(_react2.default.Component);
+
+	var styles = function styles(img) {
+		return {
+			width: "50px",
+			height: "50px",
+			backgroundSize: 'cover',
+			backgroundImage: 'url(' + img + ')'
+		};
+	};
+
+	TopAlbums = (0, _reactRedux.connect)(function (state) {
+		return state;
+	})(TopAlbums);
+	exports.default = TopAlbums;
 
 /***/ }
 /******/ ]);

@@ -74,7 +74,7 @@ LocalDatabase.prototype.get = function (databasename) {
 
 LocalDatabase.prototype.resetTopArtists = function () {
 	window.indexedDB.deleteDatabase("artists");
+	
 }
-
 
 export default LocalDatabase;

@@ -5,6 +5,7 @@ import { Provider } from 'react-redux';
 import store from '../stores/Store';
 import { setUser } from '../actions/actions';
 import TopMenu from '../components/TopMenu';
+import LocalDatabase from '../data/LocalDatabase';
 
 class MainComponent extends React.Component {
 
@@ -23,10 +24,38 @@ class MainComponent extends React.Component {
 				username: store.getState().user.username
 			})
 		});
+		let username = this.checkUsername();
+		if(username) {
+			store.dispatch(setUser(username));
+		} else {
+			let db = new LocalDatabase();
+			db.resetTopArtists();
+		}
+	}
+
+	//FIKS SLETTING AV DB HER
+	componentDidUpdate(prevProps, prevState) {
+		//reset database if no user
+		/*
+		let username = this.checkUsername();
+		if(!username) {
+			let db = new LocalDatabase();
+			db.resetTopArtists();
+		} 
+
+		*/    
+	}
+
+	checkUsername() {
+		if(window.localStorage.getItem('statisfy:username')) {
+			return window.localStorage.getItem('statisfy:username');
+		}
+		return false;
 	}
 
 	setUsername() {
 		let username = document.getElementById('username').value;
+		window.localStorage.setItem('statisfy:username', username);
 		store.dispatch(setUser(username));
 	}
 
