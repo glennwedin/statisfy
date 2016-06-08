@@ -159,8 +159,13 @@ class ArtistStats extends React.Component {
 			})
 		}
 
+		if(this.props.stats.isFetching) {
+			artistGrid = <div className=""><div className="loader"></div></div>
+		}
+
 		//
 		return (
+
 			<div>
 				<div className="row">
 					<div className="small-12 medium-4 columns">

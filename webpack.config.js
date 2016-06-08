@@ -1,7 +1,7 @@
 var webpack = require('webpack');
 var path = require('path')
 
-var env = 'development';
+var env = 'production';
 
 module.exports = [
     {
@@ -24,7 +24,7 @@ module.exports = [
         plugins: [
             new webpack.DefinePlugin({
                 'process.env': {
-                    'NODE_ENV': '"'+env+'"'
+                    'NODE_ENV': JSON.stringify(env)
                 }
             })
         ]
@@ -52,7 +52,7 @@ module.exports = [
         plugins: [
             new webpack.DefinePlugin({
                 'process.env': {
-                    'NODE_ENV': '"'+env+'"'
+                    'NODE_ENV': JSON.stringify(env)
                 }
             })
         ]

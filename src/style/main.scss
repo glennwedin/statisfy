@@ -51,6 +51,7 @@ h1{
 	.tr{
 		display: table;
 		width: 100%;
+		padding: 0 1em 0 0;
 		&:hover, &:active{
 			background-color: #fff;
 		}
