@@ -33,10 +33,10 @@ class TopMenu extends React.Component {
 									<Link to="/artists">My artists</Link>
 								</li>
 								<li>
-									<a href="" onClick={this.leave.bind(this)}>Leave this user</a>
+									<Link to="/friends">Friends</Link>
 								</li>
 								<li>
-									<Link to="/"></Link>
+									<a href="" onClick={this.leave.bind(this)}>Leave this user</a>
 								</li>
 							</ul>
 						</nav>

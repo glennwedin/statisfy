@@ -51802,15 +51802,19 @@
 										'li',
 										null,
 										_react2.default.createElement(
-											'a',
-											{ href: '', onClick: this.leave.bind(this) },
-											'Leave this user'
+											_reactRouter.Link,
+											{ to: '/friends' },
+											'Friends'
 										)
 									),
 									_react2.default.createElement(
 										'li',
 										null,
-										_react2.default.createElement(_reactRouter.Link, { to: '/' })
+										_react2.default.createElement(
+											'a',
+											{ href: '', onClick: this.leave.bind(this) },
+											'Leave this user'
+										)
 									)
 								)
 							)
