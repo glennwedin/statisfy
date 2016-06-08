@@ -39,7 +39,7 @@ class TopAlbums extends React.Component {
 		}
 
 		return (
-			<div className="">
+			<div className="list">
 				<div className="table">
 					<div className="tbody">
 						{list}

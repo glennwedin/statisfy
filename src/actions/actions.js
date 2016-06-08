@@ -90,12 +90,15 @@ function receiveTopArtists(user, json) {
 export function getTopArtists(user) {
 	return function (dispatch) {
 		//Dispatch building indexes notification
+		dispatch(requestStats(user))
+
 		let page = 1,
 		total = 1,
 		result = [];
 
+
 		let db = new LocalDatabase();
-			db.open('artists').then(() => {
+		db.open(user).then(() => {
 
 			let recursive = () => {
 				fetch('http://ws.audioscrobbler.com/2.0/?method=user.gettopartists&user='+user+'&limit=200&page='+page+'&api_key=484711f72a2c24bf969ab0e30abe3d6a&format=json')
@@ -108,6 +111,7 @@ export function getTopArtists(user) {
 						recursive();
 					} else {
 						db.add('artists', result);
+						db.close();
 						dispatch(receiveTopArtists(user, result))
 						//console.log(result)
 					}
@@ -117,11 +121,13 @@ export function getTopArtists(user) {
 			}
 
 			//request data from localdb and dispatch
-			db.get('artists').then((result) => {
+			db.get(user).then((result) => {
 				if(result.length > 0) {
-					//console.log('res', user, result.length)
+					console.log('res', user, result.length)
+					db.close();
 					dispatch(receiveTopArtists(user, result))
 				} else{
+					console.log('kjør recursive')
 					recursive();
 				}
 			});

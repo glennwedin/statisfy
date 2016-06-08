@@ -49316,7 +49316,7 @@
 
 	var _UserComponent2 = _interopRequireDefault(_UserComponent);
 
-	var _ArtistComponent = __webpack_require__(440);
+	var _ArtistComponent = __webpack_require__(441);
 
 	var _ArtistComponent2 = _interopRequireDefault(_ArtistComponent);
 
@@ -49417,21 +49417,6 @@
 					db.resetTopArtists();
 				}
 			}
-
-			//FIKS SLETTING AV DB HER
-
-		}, {
-			key: "componentDidUpdate",
-			value: function componentDidUpdate(prevProps, prevState) {
-				//reset database if no user
-				/*
-	   let username = this.checkUsername();
-	   if(!username) {
-	   	let db = new LocalDatabase();
-	   	db.resetTopArtists();
-	   } 
-	   		*/
-			}
 		}, {
 			key: "checkUsername",
 			value: function checkUsername() {
@@ -49476,6 +49461,11 @@
 							_react2.default.createElement(
 								"div",
 								{ className: "small-4 columns" },
+								_react2.default.createElement(
+									"h1",
+									null,
+									"Statisfy"
+								),
 								_react2.default.createElement("input", { id: "username", type: "text", placeholder: "LastFM username" }),
 								_react2.default.createElement(
 									"button",
@@ -51521,12 +51511,14 @@
 	function getTopArtists(user) {
 		return function (dispatch) {
 			//Dispatch building indexes notification
+			dispatch(requestStats(user));
+
 			var page = 1,
 			    total = 1,
 			    result = [];
 
 			var db = new _LocalDatabase2.default();
-			db.open('artists').then(function () {
+			db.open(user).then(function () {
 
 				var recursive = function recursive() {
 					fetch('http://ws.audioscrobbler.com/2.0/?method=user.gettopartists&user=' + user + '&limit=200&page=' + page + '&api_key=484711f72a2c24bf969ab0e30abe3d6a&format=json').then(function (response) {
@@ -51539,6 +51531,7 @@
 							recursive();
 						} else {
 							db.add('artists', result);
+							db.close();
 							dispatch(receiveTopArtists(user, result));
 							//console.log(result)
 						}
@@ -51548,11 +51541,13 @@
 				};
 
 				//request data from localdb and dispatch
-				db.get('artists').then(function (result) {
+				db.get(user).then(function (result) {
 					if (result.length > 0) {
-						//console.log('res', user, result.length)
+						console.log('res', user, result.length);
+						db.close();
 						dispatch(receiveTopArtists(user, result));
 					} else {
+						console.log('kjør recursive');
 						recursive();
 					}
 				});
@@ -51672,7 +51667,6 @@
 		var _this2 = this;
 
 		return new Promise(function (resolve) {
-			console.log(_this2.db);
 			var finalResult = [];
 			var trans = _this2.db.transaction(["artists"], "readwrite");
 			var store = trans.objectStore("artists");
@@ -51691,6 +51685,10 @@
 				result.continue();
 			};
 		});
+	};
+
+	LocalDatabase.prototype.close = function () {
+		this.db.close();
 	};
 
 	LocalDatabase.prototype.resetTopArtists = function () {
@@ -51847,7 +51845,7 @@
 
 	var _LatestStats2 = _interopRequireDefault(_LatestStats);
 
-	var _TopAlbums = __webpack_require__(442);
+	var _TopAlbums = __webpack_require__(440);
 
 	var _TopAlbums2 = _interopRequireDefault(_TopAlbums);
 
@@ -52019,7 +52017,7 @@
 
 				return _react2.default.createElement(
 					'div',
-					{ className: '' },
+					{ className: 'list' },
 					_react2.default.createElement(
 						'div',
 						{ className: 'table' },
@@ -52161,7 +52159,7 @@
 
 				return _react2.default.createElement(
 					'div',
-					{ className: '' },
+					{ className: 'list' },
 					_react2.default.createElement(
 						'div',
 						{ className: 'table' },
@@ -62341,7 +62339,121 @@
 
 	var _reactRedux = __webpack_require__(308);
 
-	var _ArtistStats = __webpack_require__(441);
+	var _reactRouter = __webpack_require__(118);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var TopAlbums = function (_React$Component) {
+		_inherits(TopAlbums, _React$Component);
+
+		function TopAlbums(props) {
+			_classCallCheck(this, TopAlbums);
+
+			var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(TopAlbums).call(this, props));
+
+			_this.state = {};
+			return _this;
+		}
+
+		_createClass(TopAlbums, [{
+			key: 'render',
+			value: function render() {
+				console.log('albums', this.props);
+				var list = [];
+
+				if (this.props.stats.userstats.topalbums) {
+					var albumstat = this.props.stats.userstats.topalbums;
+					list = albumstat.album.map(function (el, i) {
+						return _react2.default.createElement(
+							'div',
+							{ key: i, className: 'tr' },
+							_react2.default.createElement(
+								'div',
+								{ className: 'td' },
+								_react2.default.createElement('div', { style: styles(el.image[1]['#text']) })
+							),
+							_react2.default.createElement(
+								'div',
+								{ className: 'td' },
+								_react2.default.createElement(
+									'div',
+									{ className: 'tablepad' },
+									el.name,
+									_react2.default.createElement('br', null),
+									_react2.default.createElement(
+										'strong',
+										null,
+										el.artist.name
+									)
+								)
+							),
+							_react2.default.createElement(
+								'div',
+								{ className: 'td' },
+								el.playcount
+							)
+						);
+					});
+				}
+
+				return _react2.default.createElement(
+					'div',
+					{ className: 'list' },
+					_react2.default.createElement(
+						'div',
+						{ className: 'table' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'tbody' },
+							list
+						)
+					)
+				);
+			}
+		}]);
+
+		return TopAlbums;
+	}(_react2.default.Component);
+
+	var styles = function styles(img) {
+		return {
+			width: "50px",
+			height: "50px",
+			backgroundSize: 'cover',
+			backgroundImage: 'url(' + img + ')'
+		};
+	};
+
+	TopAlbums = (0, _reactRedux.connect)(function (state) {
+		return state;
+	})(TopAlbums);
+	exports.default = TopAlbums;
+
+/***/ },
+/* 441 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(82);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactRedux = __webpack_require__(308);
+
+	var _ArtistStats = __webpack_require__(442);
 
 	var _ArtistStats2 = _interopRequireDefault(_ArtistStats);
 
@@ -62423,7 +62535,7 @@
 	exports.default = ArtistComponent;
 
 /***/ },
-/* 441 */
+/* 442 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -62474,7 +62586,7 @@
 			key: 'componentDidMount',
 			value: function componentDidMount() {
 				this.setState({
-					totalpages: this.props.stats.topartiststats.length / this.state.prpage
+					totalpages: Math.ceil(this.props.stats.topartiststats.length / this.state.prpage)
 				});
 			}
 		}, {
@@ -62617,15 +62729,25 @@
 		}, {
 			key: 'refresh',
 			value: function refresh(e) {
+				var _this2 = this;
+
 				e.preventDefault();
 				console.log(this.props.user.username);
-				window.indexedDB.deleteDatabase('artists');
-				this.props.dispatch((0, _actions.getTopArtists)(this.props.user.username));
+				var delReq = window.indexedDB.deleteDatabase(this.props.user.username);
+				delReq.onsuccess = function () {
+					_this2.props.dispatch((0, _actions.getTopArtists)(_this2.props.user.username));
+				};
+				delReq.onerror = function (err) {
+					console.log(err);
+				};
+				delReq.onblocked = function (event) {
+					alert("Error message: Database in blocked state. ");
+				};
 			}
 		}, {
 			key: 'render',
 			value: function render() {
-				var _this2 = this;
+				var _this3 = this;
 
 				var artistGrid = "",
 				    pagecount = 0;
@@ -62654,7 +62776,7 @@
 	     	return; 
 	     }*/
 						//console.log(this.state.currentpage*this.state.prpage)
-						if (pagecount < _this2.state.prpage && i >= _this2.state.currentpage * _this2.state.prpage - _this2.state.prpage) {
+						if (pagecount < _this3.state.prpage && i >= _this3.state.currentpage * _this3.state.prpage - _this3.state.prpage) {
 							pagecount++;
 							return _react2.default.createElement(
 								'div',
@@ -62674,7 +62796,7 @@
 					});
 				}
 
-				//<a onClick={this.refresh.bind(this)}>Refresh</a>
+				//
 				return _react2.default.createElement(
 					'div',
 					null,
@@ -62689,7 +62811,7 @@
 						_react2.default.createElement(
 							'div',
 							{ className: 'small-12 medium-4 columns' },
-							'refresh-knapp kommer her, fordi denne listen lagres i nettleserens database...'
+							_react2.default.createElement('a', { className: 'refresh ion-refresh', onClick: this.refresh.bind(this), title: 'Click to refresh this list. Data intensive operation.' })
 						)
 					),
 					_react2.default.createElement(
@@ -62713,120 +62835,6 @@
 		return state;
 	})(ArtistStats);
 	exports.default = ArtistStats;
-
-/***/ },
-/* 442 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(82);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _reactRedux = __webpack_require__(308);
-
-	var _reactRouter = __webpack_require__(118);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var TopAlbums = function (_React$Component) {
-		_inherits(TopAlbums, _React$Component);
-
-		function TopAlbums(props) {
-			_classCallCheck(this, TopAlbums);
-
-			var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(TopAlbums).call(this, props));
-
-			_this.state = {};
-			return _this;
-		}
-
-		_createClass(TopAlbums, [{
-			key: 'render',
-			value: function render() {
-				console.log('albums', this.props);
-				var list = [];
-
-				if (this.props.stats.userstats.topalbums) {
-					var albumstat = this.props.stats.userstats.topalbums;
-					list = albumstat.album.map(function (el, i) {
-						return _react2.default.createElement(
-							'div',
-							{ key: i, className: 'tr' },
-							_react2.default.createElement(
-								'div',
-								{ className: 'td' },
-								_react2.default.createElement('div', { style: styles(el.image[1]['#text']) })
-							),
-							_react2.default.createElement(
-								'div',
-								{ className: 'td' },
-								_react2.default.createElement(
-									'div',
-									{ className: 'tablepad' },
-									el.name,
-									_react2.default.createElement('br', null),
-									_react2.default.createElement(
-										'strong',
-										null,
-										el.artist.name
-									)
-								)
-							),
-							_react2.default.createElement(
-								'div',
-								{ className: 'td' },
-								el.playcount
-							)
-						);
-					});
-				}
-
-				return _react2.default.createElement(
-					'div',
-					{ className: '' },
-					_react2.default.createElement(
-						'div',
-						{ className: 'table' },
-						_react2.default.createElement(
-							'div',
-							{ className: 'tbody' },
-							list
-						)
-					)
-				);
-			}
-		}]);
-
-		return TopAlbums;
-	}(_react2.default.Component);
-
-	var styles = function styles(img) {
-		return {
-			width: "50px",
-			height: "50px",
-			backgroundSize: 'cover',
-			backgroundImage: 'url(' + img + ')'
-		};
-	};
-
-	TopAlbums = (0, _reactRedux.connect)(function (state) {
-		return state;
-	})(TopAlbums);
-	exports.default = TopAlbums;
 
 /***/ }
 /******/ ]);

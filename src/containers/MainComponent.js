@@ -33,19 +33,6 @@ class MainComponent extends React.Component {
 		}
 	}
 
-	//FIKS SLETTING AV DB HER
-	componentDidUpdate(prevProps, prevState) {
-		//reset database if no user
-		/*
-		let username = this.checkUsername();
-		if(!username) {
-			let db = new LocalDatabase();
-			db.resetTopArtists();
-		} 
-
-		*/    
-	}
-
 	checkUsername() {
 		if(window.localStorage.getItem('statisfy:username')) {
 			return window.localStorage.getItem('statisfy:username');
@@ -75,6 +62,7 @@ class MainComponent extends React.Component {
 							&nbsp;
 						</div>
 						<div className="small-4 columns">
+							<h1>Statisfy</h1>
 							<input id="username" type="text" placeholder="LastFM username" />
 							<button className="button" onClick={this.setUsername.bind(this)}>OK!</button>
 						</div>

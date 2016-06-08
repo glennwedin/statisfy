@@ -5,7 +5,7 @@ let LocalDatabase = function () {
 LocalDatabase.prototype.open = function (databasename) {
 	return new Promise((resolve) => {
 		let request = indexedDB.open(databasename, 1);
-		
+
 		request.onerror = (err) => {
 			console.log(err)
 		}
@@ -17,11 +17,11 @@ LocalDatabase.prototype.open = function (databasename) {
 		}
 
 		request.onupgradeneeded = (e) => {
-	        console.log ("Going to upgrade our DB");
-	        this.db = e.target.result;
-	        if(this.db.objectStoreNames.contains("artists")) {
-	    	    this.db.deleteObjectStore("artists");
-	        }
+	    	console.log ("Going to upgrade our DB");
+	    	this.db = e.target.result;
+	    	if(this.db.objectStoreNames.contains("artists")) {
+	    		this.db.deleteObjectStore("artists");
+	    	}
 	        let store = this.db.createObjectStore("artists", {autoIncrement: true});
 
 	        request.onfailure = this.onerror;
@@ -51,7 +51,6 @@ LocalDatabase.prototype.add = function (databasename, data) {
 
 LocalDatabase.prototype.get = function (databasename) {
 	return new Promise((resolve) => {
-		console.log(this.db)
 		let finalResult = [];
 		let trans = this.db.transaction(["artists"], "readwrite");
 	    let store = trans.objectStore("artists");
@@ -70,6 +69,10 @@ LocalDatabase.prototype.get = function (databasename) {
 	    	result.continue();
 	    };
 	});
+}
+
+LocalDatabase.prototype.close = function () {
+	this.db.close();
 }
 
 LocalDatabase.prototype.resetTopArtists = function () {

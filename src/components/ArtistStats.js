@@ -19,7 +19,7 @@ class ArtistStats extends React.Component {
 
 	componentDidMount() {
 		this.setState({
-			totalpages: this.props.stats.topartiststats.length/this.state.prpage
+			totalpages: Math.ceil(this.props.stats.topartiststats.length/this.state.prpage)
 		});		
 	}
 
@@ -115,8 +115,16 @@ class ArtistStats extends React.Component {
 	refresh(e){
 		e.preventDefault();
 		console.log(this.props.user.username)
-		window.indexedDB.deleteDatabase('artists');
-		this.props.dispatch(getTopArtists(this.props.user.username));
+		let delReq = window.indexedDB.deleteDatabase(this.props.user.username);
+		delReq.onsuccess = () => {
+			this.props.dispatch(getTopArtists(this.props.user.username));
+		}
+		delReq.onerror = (err) => {
+			console.log(err);
+		}
+		delReq.onblocked = function(event) {
+		    alert("Error message: Database in blocked state. ");
+		};
 	}
 
 	render () {
@@ -151,7 +159,7 @@ class ArtistStats extends React.Component {
 			})
 		}
 
-		//<a onClick={this.refresh.bind(this)}>Refresh</a>
+		//
 		return (
 			<div>
 				<div className="row">
@@ -159,7 +167,7 @@ class ArtistStats extends React.Component {
 						<input className="artist-filter" type="text" name="search" placeholder="Filter this list" onChange={this.search.bind(this)} />
 					</div>
 					<div className="small-12 medium-4 columns">
-						refresh-knapp kommer her, fordi denne listen lagres i nettleserens database...
+						<a className="refresh ion-refresh" onClick={this.refresh.bind(this)} title="Click to refresh this list. Data intensive operation."></a>
 					</div>
 				</div>
 				<div className="small-up-3 medium-up-3 large-up-8">
