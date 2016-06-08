@@ -49320,10 +49320,11 @@
 
 	var _ArtistComponent2 = _interopRequireDefault(_ArtistComponent);
 
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	var _FriendsComponent = __webpack_require__(443);
 
-	//import FriendComponent from "../containers/FriendComponent";
-	//<Route path="/friends" component={FriendComponent}/>
+	var _FriendsComponent2 = _interopRequireDefault(_FriendsComponent);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var mainroute = function mainroute(history) {
 		history = history || null;
@@ -49335,7 +49336,8 @@
 				{ path: "/", component: _MainComponent2.default },
 				_react2.default.createElement(_reactRouter.IndexRoute, { component: _UserComponent2.default }),
 				_react2.default.createElement(_reactRouter.Route, { path: "/artists", component: _ArtistComponent2.default }),
-				_react2.default.createElement(_reactRouter.Route, { path: "/recommendations", component: _UserComponent2.default })
+				_react2.default.createElement(_reactRouter.Route, { path: "/recommendations", component: _UserComponent2.default }),
+				_react2.default.createElement(_reactRouter.Route, { path: "/friends", component: _FriendsComponent2.default })
 			)
 		);
 	};
@@ -49435,15 +49437,12 @@
 		}, {
 			key: "render",
 			value: function render() {
-
-				var loadingScreen = "";
-				if (this.state.loading) {
-					loadingScreen = _react2.default.createElement(
-						"div",
-						{ className: "loading" },
-						"LOADING"
-					);
-				}
+				/*
+	   let loadingScreen = "";
+	   if(this.state.loading) {
+	   	loadingScreen = <div className="loading"><div className="loader"></div></div>
+	   }
+	   */
 
 				var nope = "";
 				if (!this.state.username) {
@@ -49481,6 +49480,7 @@
 						)
 					);
 				}
+				//{loadingScreen}
 				return _react2.default.createElement(
 					_reactRedux.Provider,
 					{ store: _Store2.default },
@@ -49500,7 +49500,6 @@
 						_react2.default.createElement(
 							"body",
 							null,
-							loadingScreen,
 							nope,
 							_react2.default.createElement(_TopMenu2.default, null),
 							_react2.default.createElement(
@@ -51380,7 +51379,8 @@
 
 	function user() {
 		var state = arguments.length <= 0 || arguments[0] === undefined ? {
-			username: null
+			username: null,
+			friends: null
 		} : arguments[0];
 		var action = arguments[1];
 
@@ -51388,6 +51388,15 @@
 			case _actions.SET_USER:
 				return Object.assign({}, state, {
 					username: action.username
+				});
+			case _actions.REQUEST_FRIENDS:
+				return Object.assign({}, state, {
+					isFetching: true,
+					didInvalidate: false
+				});
+			case _actions.RECEIVE_FRIENDS:
+				return Object.assign({}, state, {
+					friends: action.friends
 				});
 			default:
 				return state;
@@ -51415,6 +51424,7 @@
 	exports.getStats = getStats;
 	exports.getTopArtists = getTopArtists;
 	exports.resetTopArtists = resetTopArtists;
+	exports.getFriends = getFriends;
 
 	var _LocalDatabase = __webpack_require__(333);
 
@@ -51581,25 +51591,24 @@
 		return {
 			type: RECEIVE_FRIENDS,
 			user: user,
-			artiststats: json,
+			friends: json,
 			receivedAt: Date.now()
 		};
 	}
 
-	/*
-	export function getFriends(user) {
+	function getFriends(user) {
 		return function (dispatch) {
-			dispatch(requestFriends);
-			fetch('http://ws.audioscrobbler.com/2.0/?method=user.getfriends&user='+user+'&api_key=484711f72a2c24bf969ab0e30abe3d6a&format=json')
-			.then(response => response.json())
-			.then(json => {
-				dispatch(receiveFriends(json));
-			}).catch(err => {
+			dispatch(requestFriends(user));
+			fetch('http://ws.audioscrobbler.com/2.0/?method=user.getfriends&user=' + user + '&api_key=484711f72a2c24bf969ab0e30abe3d6a&format=json').then(function (response) {
+				return response.json();
+			}).then(function (json) {
+				console.log(json.friends.user);
+				dispatch(receiveFriends(user, json.friends.user));
+			}).catch(function (err) {
 				console.log(err);
-			})
-		}
+			});
+		};
 	}
-	*/
 
 /***/ },
 /* 333 */
@@ -52015,6 +52024,14 @@
 					});
 				}
 
+				if (this.props.stats.isFetching) {
+					list = _react2.default.createElement(
+						'div',
+						{ className: '' },
+						_react2.default.createElement('div', { className: 'loader' })
+					);
+				}
+
 				return _react2.default.createElement(
 					'div',
 					{ className: 'list' },
@@ -52155,6 +52172,14 @@
 							)
 						);
 					});
+				}
+
+				if (this.props.stats.isFetching) {
+					list = _react2.default.createElement(
+						'div',
+						{ className: '' },
+						_react2.default.createElement('div', { className: 'loader' })
+					);
 				}
 
 				return _react2.default.createElement(
@@ -62402,6 +62427,14 @@
 					});
 				}
 
+				if (this.props.stats.isFetching) {
+					list = _react2.default.createElement(
+						'div',
+						{ className: '' },
+						_react2.default.createElement('div', { className: 'loader' })
+					);
+				}
+
 				return _react2.default.createElement(
 					'div',
 					{ className: 'list' },
@@ -62835,6 +62868,104 @@
 		return state;
 	})(ArtistStats);
 	exports.default = ArtistStats;
+
+/***/ },
+/* 443 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(82);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactRedux = __webpack_require__(308);
+
+	var _actions = __webpack_require__(332);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var FriendsComponent = function (_React$Component) {
+		_inherits(FriendsComponent, _React$Component);
+
+		function FriendsComponent(props) {
+			_classCallCheck(this, FriendsComponent);
+
+			var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(FriendsComponent).call(this, props));
+
+			console.log('props', props);
+			return _this;
+		}
+
+		_createClass(FriendsComponent, [{
+			key: 'componentDidMount',
+			value: function componentDidMount() {
+				if (this.props.user.username) {
+					this.props.dispatch((0, _actions.getFriends)(this.props.user.username));
+				}
+			}
+		}, {
+			key: 'componentDidUpdate',
+			value: function componentDidUpdate(prevProps, prevState) {
+				if (prevProps.user.username !== this.props.user.username) {
+					this.props.dispatch((0, _actions.getFriends)(this.props.user.username));
+				}
+			}
+		}, {
+			key: 'render',
+			value: function render() {
+				var friends = [];
+				if (this.props.user.friends) {
+					this.props.user.friends.map(function (f, i) {
+						friends.push(_react2.default.createElement(
+							'div',
+							{ className: 'column' },
+							f.name
+						));
+					});
+				}
+				return _react2.default.createElement(
+					'section',
+					{ className: 'row' },
+					_react2.default.createElement(
+						'div',
+						{ className: 'small-12 medium-4 columns' },
+						_react2.default.createElement(
+							'h1',
+							null,
+							'Friends'
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'friends small-up-3 medium-up-3 large-up-8' },
+							friends
+						)
+					),
+					_react2.default.createElement('div', { className: 'small-12 medium-4 columns' }),
+					_react2.default.createElement('div', { className: 'small-12 medium-4 columns' })
+				);
+			}
+		}]);
+
+		return FriendsComponent;
+	}(_react2.default.Component);
+
+	FriendsComponent = (0, _reactRedux.connect)(function (state) {
+		return state;
+	})(FriendsComponent);
+	exports.default = FriendsComponent;
 
 /***/ }
 /******/ ]);

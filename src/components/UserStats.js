@@ -37,6 +37,10 @@ class UserStats extends React.Component {
 			});
 		}
 
+		if(this.props.stats.isFetching) {
+			list = <div className=""><div className="loader"></div></div>
+		}
+
 		return (
 			<div className="list">
 				<div className="table">

@@ -47,11 +47,12 @@ class MainComponent extends React.Component {
 	}
 
 	render () {
-
+		/*
 		let loadingScreen = "";
 		if(this.state.loading) {
-			loadingScreen = <div className="loading">LOADING</div>
+			loadingScreen = <div className="loading"><div className="loader"></div></div>
 		}
+		*/
 
 		let nope = "";
 		if(!this.state.username) {
@@ -73,6 +74,7 @@ class MainComponent extends React.Component {
 				</div>
 			)
 		}
+		//{loadingScreen}
 		return (
 				<Provider store={store}>
 					<html lang="en">
@@ -81,7 +83,6 @@ class MainComponent extends React.Component {
 						<title>Statisfy</title>
 					</head>
 					<body>
-						{loadingScreen}
 						{nope}
 						<TopMenu />
 						<div id="app">{this.props.children}</div>

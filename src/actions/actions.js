@@ -165,22 +165,22 @@ function receiveFriends(user, json) {
   return {
     type: RECEIVE_FRIENDS,
     user,
-    artiststats: json,
+    friends: json,
     receivedAt: Date.now()
   }
 }
 
-/*
+
 export function getFriends(user) {
 	return function (dispatch) {
-		dispatch(requestFriends);
+		dispatch(requestFriends(user));
 		fetch('http://ws.audioscrobbler.com/2.0/?method=user.getfriends&user='+user+'&api_key=484711f72a2c24bf969ab0e30abe3d6a&format=json')
 		.then(response => response.json())
 		.then(json => {
-			dispatch(receiveFriends(json));
+			console.log(json.friends.user)
+			dispatch(receiveFriends(user, json.friends.user));
 		}).catch(err => {
 			console.log(err);
 		})
 	}
 }
-*/

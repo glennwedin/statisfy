@@ -3,7 +3,9 @@ import {
 	RECEIVE_STATS,
 	REQUEST_TOP_ARTISTS,
 	RECEIVE_TOP_ARTISTS,
-	SET_USER
+	SET_USER,
+	REQUEST_FRIENDS,
+	RECEIVE_FRIENDS
 } from "../actions/actions.js";
 import { combineReducers } from 'redux';
 
@@ -46,12 +48,22 @@ function stats(state = {
 }
 
 function user(state = {
-	username: null
+	username: null,
+	friends: null,
 }, action) {
 	switch(action.type) {
 		case SET_USER:
 			return Object.assign({}, state, {
 				username: action.username
+			});
+		case REQUEST_FRIENDS:
+			return Object.assign({}, state, { 
+				isFetching: true, 
+				didInvalidate: false 
+			});
+		case RECEIVE_FRIENDS: 
+			return Object.assign({}, state, {
+				friends: action.friends
 			});
 		default:
 			return state;
