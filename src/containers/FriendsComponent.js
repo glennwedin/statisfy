@@ -13,7 +13,7 @@ class FriendsComponent extends React.Component {
 	componentDidMount() {
 		if(this.props.user.username) {
 			this.props.dispatch(getFriends(this.props.user.username));
-		}     
+		}
 	}
 
 	componentDidUpdate(prevProps, prevState) {
@@ -26,22 +26,28 @@ class FriendsComponent extends React.Component {
 		let friends = [];
 		if(this.props.user.friends) {
 			this.props.user.friends.map((f, i) => {
-				friends.push(<div className="column">{f.name}</div>)
+				console.log(f);
+				let friend = (
+						<div className="column artist-grid-item" style={{backgroundImage: 'url('+f.image[3]['#text']+')'}}>
+							{f.name}
+						</div>
+				)
+				friends.push(friend)
 			});
 		}
  		return (
  			<section className="row">
-				<div className="small-12 medium-4 columns">
+				<div className="small-12 medium-8 columns">
 					<h1>Friends</h1>
-					<div className="friends small-up-3 medium-up-3 large-up-8">
+					<div className="friends small-up-3 medium-up-3 large-up-3">
 						{friends}
 					</div>
 				</div>
-				<div className="small-12 medium-4 columns">
-					
+				<div className="small-12 medium-1 columns">
+
 				</div>
-				<div className="small-12 medium-4 columns">
-					
+				<div className="small-12 medium-3 columns">
+
 				</div>
 			</section>
 		)

@@ -1,11 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import moment from 'moment';
+import ReactListScroll from './ReactListScroll';
 
 class LatestStats extends React.Component {
 
 	componentDidMount() {
-		    
+
 	}
 
 	showOptions (e) {
@@ -54,19 +55,19 @@ class LatestStats extends React.Component {
 				)
 			});
 		}
-		
+
 		if(this.props.stats.isFetching) {
 			list = <div className=""><div className="loader"></div></div>
 		}
 
 		return (
-			<div className="list">
-				<div className="table">
-					<div className="tbody">
-						{list}
+			<ReactListScroll>
+					<div className="table">
+						<div className="tbody">
+							{list}
+						</div>
 					</div>
-				</div>
-			</div>
+			</ReactListScroll>
 		)
 	}
 }
