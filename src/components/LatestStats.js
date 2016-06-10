@@ -61,7 +61,7 @@ class LatestStats extends React.Component {
 		}
 
 		return (
-			<ReactListScroll>
+			<ReactListScroll speed="10" height="500">
 					<div className="table">
 						<div className="tbody">
 							{list}

@@ -51962,6 +51962,10 @@
 
 	var _reactRedux = __webpack_require__(308);
 
+	var _ReactListScroll = __webpack_require__(440);
+
+	var _ReactListScroll2 = _interopRequireDefault(_ReactListScroll);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -52038,8 +52042,8 @@
 				}
 
 				return _react2.default.createElement(
-					'div',
-					{ className: 'list' },
+					_ReactListScroll2.default,
+					{ speed: '10', height: '500' },
 					_react2.default.createElement(
 						'div',
 						{ className: 'table' },
@@ -52193,7 +52197,7 @@
 
 				return _react2.default.createElement(
 					_ReactListScroll2.default,
-					null,
+					{ speed: '10', height: '500' },
 					_react2.default.createElement(
 						'div',
 						{ className: 'table' },
@@ -62393,31 +62397,50 @@
 
 	    _this.state = {
 	      draggerPos: 0,
-	      startpos: null,
-	      action: null
+	      startpos: 0,
+	      action: null,
+	      height: props.height || '200',
+	      contentHeight: 0,
+	      speed: 1
 	    };
 
 	    _this.drag = _this.drag.bind(_this);
+	    _this.releaseDragger = _this.releaseDragger.bind(_this);
 	    return _this;
 	  }
 
 	  _createClass(ReactListScroll, [{
 	    key: 'componentDidMount',
 	    value: function componentDidMount() {
-	      var el = _reactDom2.default.findDOMNode(this);
 	      //TODO: height er undefined
-	      window.addEventListener('mouseup', this.releaseDragger.bind(this));
+	      window.addEventListener('mouseup', this.releaseDragger);
 	    }
 	  }, {
 	    key: 'componentDidUpdate',
-	    value: function componentDidUpdate() {
-	      console.log(this.state);
+	    value: function componentDidUpdate(prevProps, prevState) {
+	      console.log('Log', this.state);
+
+	      var el = _reactDom2.default.findDOMNode(this),
+	          contentHeight = el.querySelector('.ReactListScroll-content').clientHeight;
+	      if (prevState.contentHeight !== contentHeight) {
+	        var speed = contentHeight / this.state.height;
+
+	        this.setState({
+	          contentHeight: contentHeight,
+	          speed: speed
+	        });
+	      }
 	    }
 	  }, {
 	    key: 'drag',
 	    value: function drag(e) {
 	      var y = e.clientY - this.state.startpos;
-	      console.log('draggin', e);
+	      console.log('dragging', y);
+	      if (y <= 0) {
+	        y = 0;
+	      } else if (y >= this.state.height - 30) {
+	        y = this.state.height - 30;
+	      }
 	      this.setState({
 	        draggerPos: y
 	      });
@@ -62430,7 +62453,7 @@
 	        console.log('add mousemove');
 	        window.addEventListener('mousemove', this.drag);
 	      } else if (this.state.action === 'up') {
-	        console.log('fjern mousemove');
+	        console.log('remove mousemove');
 	        window.removeEventListener('mousemove', this.drag);
 	      }
 	    }
@@ -62443,7 +62466,7 @@
 
 	      this.setState({
 	        action: 'down',
-	        startpos: this.state.startpos || e.pageY
+	        startpos: this.state.startpos > 0 ? this.state.startpos : e.pageY
 	      }, function () {
 	        _this2.toogleMoveListener();
 	      });
@@ -62461,19 +62484,40 @@
 	      });
 	    }
 	  }, {
+	    key: 'scroll',
+	    value: function scroll(e) {
+	      var y = void 0;
+	      if (e.deltaY > 0) {
+	        y = this.state.draggerPos + 10;
+	      } else {
+	        y = this.state.draggerPos - 10;
+	      }
+
+	      console.log('dragging', y);
+	      if (y <= 0) {
+	        y = 0;
+	      } else if (y >= this.state.height - 30) {
+	        y = this.state.height - 30;
+	      }
+	      this.setState({
+	        draggerPos: y,
+	        startpos: y
+	      });
+	    }
+	  }, {
 	    key: 'render',
 	    value: function render() {
 	      return _react2.default.createElement(
 	        'div',
-	        { className: 'ReactListScroll', style: listStyles() },
+	        { className: 'ReactListScroll', style: listStyles(this.state.height), onWheel: this.scroll.bind(this) },
 	        _react2.default.createElement(
 	          'div',
 	          { className: 'ReactListScroll-scrollerwrap', style: scrollerwrapStyles() },
-	          _react2.default.createElement('div', { className: 'ReactListScroll-scroller', style: scrollerStyles(this.state.draggerPos), onMouseDown: this.clickDragger.bind(this) })
+	          _react2.default.createElement('div', { className: 'ReactListScroll-scroller', style: scrollerStyles({ y: this.state.draggerPos, height: 30 }), onMouseDown: this.clickDragger.bind(this) })
 	        ),
 	        _react2.default.createElement(
 	          'div',
-	          null,
+	          { className: 'ReactListScroll-content', style: contentStyles(this.state.draggerPos * this.state.speed) },
 	          this.props.children
 	        )
 	      );
@@ -62483,9 +62527,9 @@
 	  return ReactListScroll;
 	}(_react2.default.Component);
 
-	var listStyles = function listStyles() {
+	var listStyles = function listStyles(height) {
 	  return {
-	    height: '200px',
+	    height: height + 'px',
 	    overflow: 'hidden',
 	    position: 'relative'
 	  };
@@ -62500,15 +62544,24 @@
 	    cursor: 'pointer'
 	  };
 	};
-	var scrollerStyles = function scrollerStyles(y) {
+	var scrollerStyles = function scrollerStyles(data) {
+	  console.log(data);
 	  return {
 	    position: 'absolute',
 	    width: '6px',
-	    height: '30px',
-	    right: '0',
+	    height: data.height + 'px',
+	    right: '0px',
 	    left: '2px',
 	    backgroundColor: '#000',
-	    top: y + 'px'
+	    transform: 'translateY(' + data.y + 'px)',
+	    borderRadius: '10px'
+	  };
+	};
+	var contentStyles = function contentStyles(y) {
+	  return {
+	    position: 'absolute',
+	    zIndex: -1,
+	    transform: 'translateY(-' + y + 'px)'
 	  };
 	};
 
@@ -63288,6 +63341,10 @@
 
 	var _reactRouter = __webpack_require__(118);
 
+	var _ReactListScroll = __webpack_require__(440);
+
+	var _ReactListScroll2 = _interopRequireDefault(_ReactListScroll);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -63358,8 +63415,8 @@
 				}
 
 				return _react2.default.createElement(
-					'div',
-					{ className: 'list' },
+					_ReactListScroll2.default,
+					{ speed: '10', height: '500' },
 					_react2.default.createElement(
 						'div',
 						{ className: 'table' },

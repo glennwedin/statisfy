@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { browserHistory } from 'react-router';
+import ReactListScroll from './ReactListScroll';
 
 class TopAlbums extends React.Component {
 
@@ -37,19 +38,19 @@ class TopAlbums extends React.Component {
 				)
 			});
 		}
-	
+
 		if(this.props.stats.isFetching) {
 			list = <div className=""><div className="loader"></div></div>
 		}
 
 		return (
-			<div className="list">
+			<ReactListScroll speed="10" height="500">
 				<div className="table">
 					<div className="tbody">
 						{list}
 					</div>
 				</div>
-			</div>
+			</ReactListScroll>
 		)
 	}
 }
