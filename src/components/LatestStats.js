@@ -11,7 +11,6 @@ class LatestStats extends React.Component {
 
 	showOptions (e) {
 		let tr = e.target;
-
 	}
 
 	render () {
