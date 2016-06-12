@@ -28388,6 +28388,7 @@
 	    _this.state = {
 	      draggerPos: 0,
 	      startpos: 0,
+	      pct: 0,
 	      action: null,
 	      height: parseInt(props.height) || '200',
 	      contentHeight: 0,
@@ -28485,9 +28486,12 @@
 	        y = this.state.height - 30;
 	      }
 
+	      console.log('pct', y / this.state.height);
+
 	      this.setState({
+	        pct: y / this.state.height * 100,
 	        draggerPos: y,
-	        startpos: startpos
+	        startpos: startpos //this might not be necessary in the end.
 	      });
 	    }
 	  }, {
@@ -28503,7 +28507,7 @@
 	        ),
 	        _react2.default.createElement(
 	          'div',
-	          { className: 'ReactListScroll-content', style: contentStyles(this.state.draggerPos) },
+	          { className: 'ReactListScroll-content', style: contentStyles(this.state.pct) },
 	          this.props.children
 	        )
 	      );
@@ -28542,11 +28546,11 @@
 	    borderRadius: '10px'
 	  };
 	};
-	var contentStyles = function contentStyles(y) {
+	var contentStyles = function contentStyles(pct) {
 	  return {
 	    position: 'absolute',
 	    zIndex: -1,
-	    transform: 'translate3d(0, -' + y + 'px, 0)'
+	    transform: 'translate3d(0, -' + pct + '%, 0)'
 	  };
 	};
 
