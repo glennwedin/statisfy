@@ -29,7 +29,7 @@ class FriendsComponent extends React.Component {
 				console.log(f);
 				let friend = (
 						<div className="column artist-grid-item" style={{backgroundImage: 'url('+f.image[3]['#text']+')'}}>
-							{f.name}
+							<div className="title">{f.name}</div>
 						</div>
 				)
 				friends.push(friend)

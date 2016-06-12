@@ -52065,7 +52065,8 @@
 			width: "50px",
 			height: "50px",
 			backgroundSize: 'cover',
-			backgroundImage: 'url(' + img + ')'
+			backgroundImage: 'url(' + img + ')',
+			backgroundColor: '#333'
 		};
 	};
 
@@ -52112,11 +52113,13 @@
 
 	    _this.state = {
 	      draggerPos: 0,
-	      startpos: 0,
+	      startpos: 0, //Used to define the draggerposition on mouse down
 	      pct: 0,
 	      action: null,
 	      height: parseInt(props.height) || '200',
 	      contentHeight: 0,
+	      scrollerHeight: 30,
+	      mouseoffset: 0,
 	      speed: 1
 	    };
 
@@ -52165,11 +52168,12 @@
 	    value: function clickDragger(e) {
 	      var _this2 = this;
 
-	      //console.log('mousedown')
+	      //console.log(e.clientY - ReactDOM.findDOMNode(this).offsetTop - this.state.draggerPos)
 	      this.setState({
 	        action: 'down',
-	        startpos: this.state.startpos > 0 ? this.state.startpos : e.pageY
-	      }, function () {
+	        mouseoffset: e.clientY - _reactDom2.default.findDOMNode(this).offsetTop - this.state.draggerPos
+	      }, //startpos: (this.state.startpos > 0) ? this.state.startpos : e.pageY //denne gjør visst ikke noe
+	      function () {
 	        _this2.toogleMoveListener();
 	      });
 	    }
@@ -52180,7 +52184,8 @@
 
 	      //console.log('release')
 	      this.setState({
-	        action: 'up'
+	        action: 'up',
+	        mouseoffset: 0
 	      }, function () {
 	        _this3.toogleMoveListener();
 	      });
@@ -52189,38 +52194,35 @@
 	    key: 'scroll',
 	    value: function scroll(e) {
 	      e.preventDefault();
-
-	      //FUBAR
+	      console.log(e);
 	      var y = void 0,
-	          startpos = void 0,
 	          fromtop = document.querySelector('.ReactListScroll').getBoundingClientRect().y;
 	      //If event has delta (onMouseWheel-event)
 	      if (e.deltaY) {
 	        y = Math.round(this.state.draggerPos + e.deltaY);
-	        startpos = y;
+	        //startpos = y;
 	      } else if (e.clientY) {
-	        //calculate delta with positive or negative
-	        var delta = e.clientY - this.state.startpos;
-	        y = this.state.startpos + delta - fromtop; //TODO: minus avstanden fra toppen pluss museposisjon
-	        startpos = this.state.startpos + delta - fromtop;
-	      }
+	          //calculate delta with positive or negative
+	          console.log(e.clientY - e.pageY);
+	          var delta = e.clientY - this.state.draggerPos;
+	          y = this.state.draggerPos + delta - fromtop - this.state.mouseoffset; //TODO: trekk museposisjon fra toppen av scrollelement
+	          //startpos = this.state.startpos + delta - fromtop;
+	        }
 
 	      if (y <= 0) {
 	        y = 0;
-	      } else if (y >= this.state.height - 30) {
-	        y = this.state.height - 30;
+	      } else if (y >= this.state.height - this.state.scrollerHeight) {
+	        y = this.state.height - this.state.scrollerHeight;
 	      }
-
-	      console.log('pct', y / this.state.height);
 
 	      this.setState({
 	        pct: y / this.state.height * 100,
-	        draggerPos: y,
-	        startpos: startpos //this might not be necessary in the end.
+	        draggerPos: y
 	      });
 	    }
 	  }, {
 	    key: 'render',
+	    //startpos: startpos //this might not be necessary in the end.
 	    value: function render() {
 	      return _react2.default.createElement(
 	        'div',
@@ -52228,7 +52230,7 @@
 	        _react2.default.createElement(
 	          'div',
 	          { className: 'ReactListScroll-scrollerwrap', style: scrollerwrapStyles() },
-	          _react2.default.createElement('div', { className: 'ReactListScroll-scroller', style: scrollerStyles({ y: this.state.draggerPos, height: 30 }), onMouseDown: this.clickDragger.bind(this) })
+	          _react2.default.createElement('div', { className: 'ReactListScroll-scroller', style: scrollerStyles({ y: this.state.draggerPos, height: this.state.scrollerHeight }), onMouseDown: this.clickDragger.bind(this) })
 	        ),
 	        _react2.default.createElement(
 	          'div',
@@ -52255,8 +52257,7 @@
 	    height: '100%',
 	    position: 'absolute',
 	    backgroundColor: '#aaa',
-	    right: '0px',
-	    cursor: 'pointer'
+	    right: '0px'
 	  };
 	};
 	var scrollerStyles = function scrollerStyles(data) {
@@ -52268,7 +52269,8 @@
 	    left: '2px',
 	    backgroundColor: '#000',
 	    transform: 'translate3D(0,' + data.y + 'px, 0)',
-	    borderRadius: '10px'
+	    borderRadius: '10px',
+	    cursor: 'pointer'
 	  };
 	};
 	var contentStyles = function contentStyles(pct) {
@@ -53180,7 +53182,8 @@
 			width: "50px",
 			height: "50px",
 			backgroundSize: 'cover',
-			backgroundImage: 'url(' + img + ')'
+			backgroundImage: 'url(' + img + ')',
+			backgroundColor: '#333'
 		};
 	};
 
@@ -63437,7 +63440,8 @@
 			width: "50px",
 			height: "50px",
 			backgroundSize: 'cover',
-			backgroundImage: 'url(' + img + ')'
+			backgroundImage: 'url(' + img + ')',
+			backgroundColor: '#333'
 		};
 	};
 
@@ -63646,6 +63650,7 @@
 		}, {
 			key: 'pagination',
 			value: function pagination() {
+				console.log(this.state.filter);
 				if (this.props.stats.topartiststats && this.state.filter.length === 0) {
 					//let totalpages = Math.ceil(this.props.stats.topartiststats.length/this.state.prpage) //this.props.stats.topartiststats['@attr'].totalPages;
 
@@ -63722,14 +63727,16 @@
 
 				var f = this.state.filter;
 				f = [];
-				this.props.stats.topartiststats.filter(function (obj, i) {
-					if (obj.name.toLowerCase().indexOf(value.toLowerCase()) > -1) {
-						if (f.length >= 24) {
-							return f;
+				if (value.length > 0) {
+					this.props.stats.topartiststats.filter(function (obj, i) {
+						if (obj.name.toLowerCase().indexOf(value.toLowerCase()) > -1) {
+							if (f.length >= 24) {
+								return false;
+							}
+							f.push(obj);
 						}
-						f.push(obj);
-					}
-				});
+					});
+				}
 				this.setState({
 					filter: f
 				});
@@ -63919,7 +63926,11 @@
 						var friend = _react2.default.createElement(
 							'div',
 							{ className: 'column artist-grid-item', style: { backgroundImage: 'url(' + f.image[3]['#text'] + ')' } },
-							f.name
+							_react2.default.createElement(
+								'div',
+								{ className: 'title' },
+								f.name
+							)
 						);
 						friends.push(friend);
 					});

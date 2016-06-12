@@ -63,6 +63,7 @@ class ArtistStats extends React.Component {
 	}
 
 	pagination() {
+		console.log(this.state.filter)
 		if(this.props.stats.topartiststats && this.state.filter.length === 0) {
 			//let totalpages = Math.ceil(this.props.stats.topartiststats.length/this.state.prpage) //this.props.stats.topartiststats['@attr'].totalPages;
 
@@ -99,12 +100,14 @@ class ArtistStats extends React.Component {
 
 		let f = this.state.filter;
 		f = [];
-		this.props.stats.topartiststats.filter((obj, i) => {			
-			if((obj.name.toLowerCase()).indexOf(value.toLowerCase()) > -1) {
-				if(f.length >= 24) { return f; }
-				f.push(obj);
-			}
-		})
+		if(value.length > 0) {
+			this.props.stats.topartiststats.filter((obj, i) => {			
+				if((obj.name.toLowerCase()).indexOf(value.toLowerCase()) > -1) {
+					if(f.length >= 24) { return false; }
+					f.push(obj);
+				}
+			});
+		}
 		this.setState({
 			filter: f
 		});

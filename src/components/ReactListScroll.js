@@ -6,12 +6,14 @@ class ReactListScroll extends React.Component {
     super(props);
 
     this.state = {
-      draggerPos: 0,
-      startpos: 0,
+      draggerPos: 0,    
+      startpos: 0,      //Used to define the draggerposition on mouse down
       pct: 0,
       action: null,
       height: parseInt(props.height) || '200',
       contentHeight: 0,
+      scrollerHeight: 30,
+      mouseoffset: 0,
       speed: 1
     }
 
@@ -52,10 +54,11 @@ class ReactListScroll extends React.Component {
   }
 
   clickDragger(e) {
-    //console.log('mousedown')
+    //console.log(e.clientY - ReactDOM.findDOMNode(this).offsetTop - this.state.draggerPos)
     this.setState({
       action: 'down',
-      startpos: (this.state.startpos > 0) ? this.state.startpos : e.pageY
+      mouseoffset: e.clientY - ReactDOM.findDOMNode(this).offsetTop - this.state.draggerPos,
+      //startpos: (this.state.startpos > 0) ? this.state.startpos : e.pageY //denne gjør visst ikke noe
     }, () => {
       this.toogleMoveListener();
     })
@@ -64,7 +67,8 @@ class ReactListScroll extends React.Component {
   releaseDragger(e) {
     //console.log('release')
     this.setState({
-      action: 'up'
+      action: 'up',
+      mouseoffset: 0
     }, () => {
       this.toogleMoveListener();
     });
@@ -72,34 +76,32 @@ class ReactListScroll extends React.Component {
 
   scroll(e) {
     e.preventDefault();
-
-    //FUBAR
+    console.log(e)
     let y,
-    startpos,
     fromtop = document.querySelector('.ReactListScroll').getBoundingClientRect().y;
     //If event has delta (onMouseWheel-event)
     if(e.deltaY) {
       y = Math.round(this.state.draggerPos + e.deltaY);
-      startpos = y;
+      //startpos = y;
     } else if(e.clientY) { 
       //calculate delta with positive or negative
-      let delta = e.clientY - this.state.startpos;
-      y = this.state.startpos + delta - fromtop; //TODO: minus avstanden fra toppen pluss museposisjon
-      startpos = this.state.startpos + delta - fromtop;
+      console.log((e.clientY - e.pageY))
+      let delta = e.clientY - this.state.draggerPos;
+      y = this.state.draggerPos + delta - fromtop - this.state.mouseoffset; //TODO: trekk museposisjon fra toppen av scrollelement
+      //startpos = this.state.startpos + delta - fromtop;
     }
     
     if(y <= 0) {
       y = 0;
-    } else if (y >= this.state.height - 30) {
-      y = this.state.height - 30;
+    } else if (y >= this.state.height - this.state.scrollerHeight) {
+      y = this.state.height - this.state.scrollerHeight;
     }
 
-    console.log('pct', y/this.state.height);
 
     this.setState({
       pct: (y/this.state.height)*100,
       draggerPos: y,
-      startpos: startpos //this might not be necessary in the end.
+      //startpos: startpos //this might not be necessary in the end.
     });
   }
 
@@ -107,7 +109,7 @@ class ReactListScroll extends React.Component {
     return(
       <div className="ReactListScroll" style={listStyles(this.state.height)} onWheel={this.scroll.bind(this)}>
         <div className="ReactListScroll-scrollerwrap" style={scrollerwrapStyles()}>
-          <div className="ReactListScroll-scroller" style={scrollerStyles({y:this.state.draggerPos, height:30})} onMouseDown={this.clickDragger.bind(this)}></div>
+          <div className="ReactListScroll-scroller" style={scrollerStyles({y:this.state.draggerPos, height:this.state.scrollerHeight})} onMouseDown={this.clickDragger.bind(this)}></div>
         </div>
         <div className="ReactListScroll-content" style={contentStyles(this.state.pct)}>
         {this.props.children}
@@ -130,8 +132,7 @@ let scrollerwrapStyles = () => {
     height: '100%',
     position: 'absolute',
     backgroundColor: '#aaa',
-    right: '0px',
-    cursor: 'pointer'
+    right: '0px'
   }
 }
 let scrollerStyles = (data) => {
@@ -143,7 +144,8 @@ let scrollerStyles = (data) => {
     left: '2px',
     backgroundColor: '#000',
     transform: 'translate3D(0,'+data.y+'px, 0)',
-    borderRadius: '10px'
+    borderRadius: '10px',
+    cursor: 'pointer'
   }
 }
 let contentStyles = (pct) => {

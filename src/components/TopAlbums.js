@@ -60,7 +60,8 @@ let styles = (img) => {
 		width: "50px",
 		height: "50px",
 		backgroundSize: 'cover',
-		backgroundImage: 'url('+img+')'
+		backgroundImage: 'url('+img+')',
+		backgroundColor: '#333'
 	}
 }
 
