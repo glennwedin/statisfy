@@ -106,7 +106,7 @@ export function getTopArtists(user) {
 				.then(json => {
 					total = json.topartists['@attr'].totalPages;
 					result = result.concat(json.topartists.artist);
-					if(page < total) { 
+					if(page < total) {
 						page++;
 						recursive();
 					} else {

@@ -9,12 +9,12 @@ class ReactListScroll extends React.Component {
       draggerPos: 0,
       startpos: 0,
       action: null,
-      height: props.height || '200',
+      height: parseInt(props.height) || '200',
       contentHeight: 0,
       speed: 1
     }
 
-    this.drag = this.drag.bind(this);
+    this.scroll = this.scroll.bind(this);
     this.releaseDragger = this.releaseDragger.bind(this);
   }
 
@@ -24,13 +24,14 @@ class ReactListScroll extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    console.log('Log', this.state);
+    //console.log('Log', this.state);
 
-    let el = ReactDOM.findDOMNode(this),
-    contentHeight = el.querySelector('.ReactListScroll-content').clientHeight;
+    //let el = ReactDOM.findDOMNode(this),
+    let contentHeight = document.querySelector('.ReactListScroll-content').clientHeight;
     if(prevState.contentHeight !== contentHeight) {
       let speed = (contentHeight / this.state.height);
 
+      //Dette er ikke veldig effektivt...
       this.setState({
         contentHeight: contentHeight,
         speed: speed
@@ -38,33 +39,19 @@ class ReactListScroll extends React.Component {
     }
   }
 
-  drag(e) {
-    let y = e.clientY - this.state.startpos;
-    console.log('dragging', y)
-    if(y <= 0) {
-      y = 0;
-    } else if (y >= this.state.height - 30) {
-      y = this.state.height - 30;
-    }
-    this.setState({
-      draggerPos: y
-    })
-  }
-
   toogleMoveListener () {
-    console.log(this.state.action)
+    //console.log(this.state.action)
     if(this.state.action === 'down') {
       console.log('add mousemove')
-      window.addEventListener('mousemove', this.drag);
+      window.addEventListener('mousemove', this.scroll);
     } else if(this.state.action === 'up'){
       console.log('remove mousemove')
-      window.removeEventListener('mousemove', this.drag)
+      window.removeEventListener('mousemove', this.scroll)
     }
   }
 
   clickDragger(e) {
-    console.log('mousedown')
-
+    //console.log('mousedown')
     this.setState({
       action: 'down',
       startpos: (this.state.startpos > 0) ? this.state.startpos : e.pageY
@@ -74,7 +61,7 @@ class ReactListScroll extends React.Component {
   }
 
   releaseDragger(e) {
-    console.log('release')
+    //console.log('release')
     this.setState({
       action: 'up'
     }, () => {
@@ -83,22 +70,32 @@ class ReactListScroll extends React.Component {
   }
 
   scroll(e) {
-    let y;
-    if(e.deltaY > 0) {
-      y = this.state.draggerPos + 10;
-    } else {
-      y = this.state.draggerPos - 10;
-    }
+    e.preventDefault();
 
-    console.log('dragging', y)
+    //FUBAR
+    let y,
+    startpos,
+    fromtop = document.querySelector('.ReactListScroll').getBoundingClientRect().y;
+    //If event has delta (onMouseWheel-event)
+    if(e.deltaY) {
+      y = Math.round(this.state.draggerPos + e.deltaY);
+      startpos = y;
+    } else if(e.clientY) { 
+      //calculate delta with positive or negative
+      let delta = e.clientY - this.state.startpos;
+      y = this.state.startpos + delta - fromtop; //TODO: minus avstanden fra toppen pluss museposisjon
+      startpos = this.state.startpos + delta - fromtop;
+    }
+    
     if(y <= 0) {
       y = 0;
     } else if (y >= this.state.height - 30) {
       y = this.state.height - 30;
     }
+
     this.setState({
       draggerPos: y,
-      startpos: y
+      startpos: startpos
     });
   }
 
@@ -108,7 +105,7 @@ class ReactListScroll extends React.Component {
         <div className="ReactListScroll-scrollerwrap" style={scrollerwrapStyles()}>
           <div className="ReactListScroll-scroller" style={scrollerStyles({y:this.state.draggerPos, height:30})} onMouseDown={this.clickDragger.bind(this)}></div>
         </div>
-        <div className="ReactListScroll-content" style={contentStyles(this.state.draggerPos*this.state.speed)}>
+        <div className="ReactListScroll-content" style={contentStyles(this.state.draggerPos)}>
         {this.props.children}
         </div>
       </div>
@@ -134,7 +131,6 @@ let scrollerwrapStyles = () => {
   }
 }
 let scrollerStyles = (data) => {
-  console.log(data)
   return{
     position: 'absolute',
     width: '6px',
@@ -142,7 +138,7 @@ let scrollerStyles = (data) => {
     right: '0px',
     left: '2px',
     backgroundColor: '#000',
-    transform: 'translateY('+data.y+'px)',
+    transform: 'translate3D(0,'+data.y+'px, 0)',
     borderRadius: '10px'
   }
 }
@@ -150,7 +146,7 @@ let contentStyles = (y) => {
   return {
     position: 'absolute',
     zIndex: -1,
-    transform: 'translateY(-'+y+'px)'
+    transform: 'translate3d(0, -'+y+'px, 0)'
   }
 }
 

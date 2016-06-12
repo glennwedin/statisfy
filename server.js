@@ -52114,12 +52114,12 @@
 	      draggerPos: 0,
 	      startpos: 0,
 	      action: null,
-	      height: props.height || '200',
+	      height: parseInt(props.height) || '200',
 	      contentHeight: 0,
 	      speed: 1
 	    };
 
-	    _this.drag = _this.drag.bind(_this);
+	    _this.scroll = _this.scroll.bind(_this);
 	    _this.releaseDragger = _this.releaseDragger.bind(_this);
 	    return _this;
 	  }
@@ -52133,13 +52133,14 @@
 	  }, {
 	    key: 'componentDidUpdate',
 	    value: function componentDidUpdate(prevProps, prevState) {
-	      console.log('Log', this.state);
+	      //console.log('Log', this.state);
 
-	      var el = _reactDom2.default.findDOMNode(this),
-	          contentHeight = el.querySelector('.ReactListScroll-content').clientHeight;
+	      //let el = ReactDOM.findDOMNode(this),
+	      var contentHeight = document.querySelector('.ReactListScroll-content').clientHeight;
 	      if (prevState.contentHeight !== contentHeight) {
 	        var speed = contentHeight / this.state.height;
 
+	        //Dette er ikke veldig effektivt...
 	        this.setState({
 	          contentHeight: contentHeight,
 	          speed: speed
@@ -52147,29 +52148,15 @@
 	      }
 	    }
 	  }, {
-	    key: 'drag',
-	    value: function drag(e) {
-	      var y = e.clientY - this.state.startpos;
-	      console.log('dragging', y);
-	      if (y <= 0) {
-	        y = 0;
-	      } else if (y >= this.state.height - 30) {
-	        y = this.state.height - 30;
-	      }
-	      this.setState({
-	        draggerPos: y
-	      });
-	    }
-	  }, {
 	    key: 'toogleMoveListener',
 	    value: function toogleMoveListener() {
-	      console.log(this.state.action);
+	      //console.log(this.state.action)
 	      if (this.state.action === 'down') {
 	        console.log('add mousemove');
-	        window.addEventListener('mousemove', this.drag);
+	        window.addEventListener('mousemove', this.scroll);
 	      } else if (this.state.action === 'up') {
 	        console.log('remove mousemove');
-	        window.removeEventListener('mousemove', this.drag);
+	        window.removeEventListener('mousemove', this.scroll);
 	      }
 	    }
 	  }, {
@@ -52177,8 +52164,7 @@
 	    value: function clickDragger(e) {
 	      var _this2 = this;
 
-	      console.log('mousedown');
-
+	      //console.log('mousedown')
 	      this.setState({
 	        action: 'down',
 	        startpos: this.state.startpos > 0 ? this.state.startpos : e.pageY
@@ -52191,7 +52177,7 @@
 	    value: function releaseDragger(e) {
 	      var _this3 = this;
 
-	      console.log('release');
+	      //console.log('release')
 	      this.setState({
 	        action: 'up'
 	      }, function () {
@@ -52201,22 +52187,32 @@
 	  }, {
 	    key: 'scroll',
 	    value: function scroll(e) {
-	      var y = void 0;
-	      if (e.deltaY > 0) {
-	        y = this.state.draggerPos + 10;
-	      } else {
-	        y = this.state.draggerPos - 10;
+	      e.preventDefault();
+
+	      //FUBAR
+	      var y = void 0,
+	          startpos = void 0,
+	          fromtop = document.querySelector('.ReactListScroll').getBoundingClientRect().y;
+	      //If event has delta (onMouseWheel-event)
+	      if (e.deltaY) {
+	        y = Math.round(this.state.draggerPos + e.deltaY);
+	        startpos = y;
+	      } else if (e.clientY) {
+	        //calculate delta with positive or negative
+	        var delta = e.clientY - this.state.startpos;
+	        y = this.state.startpos + delta - fromtop; //TODO: minus avstanden fra toppen pluss museposisjon
+	        startpos = this.state.startpos + delta - fromtop;
 	      }
 
-	      console.log('dragging', y);
 	      if (y <= 0) {
 	        y = 0;
 	      } else if (y >= this.state.height - 30) {
 	        y = this.state.height - 30;
 	      }
+
 	      this.setState({
 	        draggerPos: y,
-	        startpos: y
+	        startpos: startpos
 	      });
 	    }
 	  }, {
@@ -52232,7 +52228,7 @@
 	        ),
 	        _react2.default.createElement(
 	          'div',
-	          { className: 'ReactListScroll-content', style: contentStyles(this.state.draggerPos * this.state.speed) },
+	          { className: 'ReactListScroll-content', style: contentStyles(this.state.draggerPos) },
 	          this.props.children
 	        )
 	      );
@@ -52260,7 +52256,6 @@
 	  };
 	};
 	var scrollerStyles = function scrollerStyles(data) {
-	  console.log(data);
 	  return {
 	    position: 'absolute',
 	    width: '6px',
@@ -52268,7 +52263,7 @@
 	    right: '0px',
 	    left: '2px',
 	    backgroundColor: '#000',
-	    transform: 'translateY(' + data.y + 'px)',
+	    transform: 'translate3D(0,' + data.y + 'px, 0)',
 	    borderRadius: '10px'
 	  };
 	};
@@ -52276,7 +52271,7 @@
 	  return {
 	    position: 'absolute',
 	    zIndex: -1,
-	    transform: 'translateY(-' + y + 'px)'
+	    transform: 'translate3d(0, -' + y + 'px, 0)'
 	  };
 	};
 
