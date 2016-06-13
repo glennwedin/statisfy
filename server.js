@@ -52103,6 +52103,8 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+	'use strict';
+
 	var ReactListScroll = function (_React$Component) {
 	  _inherits(ReactListScroll, _React$Component);
 
@@ -52117,10 +52119,10 @@
 	      pct: 0,
 	      action: null,
 	      height: parseInt(props.height) || '200',
-	      contentHeight: 0,
-	      scrollerHeight: 30,
+	      contentHeight: 0, //Placeholder for internal use
+	      scrollerHeight: 40,
 	      mouseoffset: 0,
-	      speed: 1
+	      speed: props.speed || 6
 	    };
 
 	    _this.scroll = _this.scroll.bind(_this);
@@ -52131,35 +52133,38 @@
 	  _createClass(ReactListScroll, [{
 	    key: 'componentDidMount',
 	    value: function componentDidMount() {
-	      //TODO: height er undefined
 	      window.addEventListener('mouseup', this.releaseDragger);
 	    }
 	  }, {
 	    key: 'componentDidUpdate',
 	    value: function componentDidUpdate(prevProps, prevState) {
-	      //console.log('Log', this.state);
-
 	      //let el = ReactDOM.findDOMNode(this),
-	      var contentHeight = document.querySelector('.ReactListScroll-content').clientHeight;
+	      var contentHeight = _reactDom2.default.findDOMNode(this).querySelector('.ReactListScroll-content').clientHeight;
 	      if (prevState.contentHeight !== contentHeight) {
-	        var speed = contentHeight / this.state.height;
+	        //let speed = (contentHeight / this.state.height);
 
-	        //Dette er ikke veldig effektivt...
 	        this.setState({
-	          contentHeight: contentHeight,
-	          speed: speed
+	          contentHeight: contentHeight
+	          //speed: speed
 	        });
 	      }
 	    }
 	  }, {
+	    key: 'over',
+	    value: function over() {
+	      _reactDom2.default.findDOMNode(this).classList.add('hover');
+	    }
+	  }, {
+	    key: 'out',
+	    value: function out() {
+	      _reactDom2.default.findDOMNode(this).classList.remove('hover');
+	    }
+	  }, {
 	    key: 'toogleMoveListener',
 	    value: function toogleMoveListener() {
-	      //console.log(this.state.action)
 	      if (this.state.action === 'down') {
-	        console.log('add mousemove');
 	        window.addEventListener('mousemove', this.scroll);
 	      } else if (this.state.action === 'up') {
-	        console.log('remove mousemove');
 	        window.removeEventListener('mousemove', this.scroll);
 	      }
 	    }
@@ -52168,12 +52173,10 @@
 	    value: function clickDragger(e) {
 	      var _this2 = this;
 
-	      //console.log(e.clientY - ReactDOM.findDOMNode(this).offsetTop - this.state.draggerPos)
 	      this.setState({
 	        action: 'down',
 	        mouseoffset: e.clientY - _reactDom2.default.findDOMNode(this).offsetTop - this.state.draggerPos
-	      }, //startpos: (this.state.startpos > 0) ? this.state.startpos : e.pageY //denne gjør visst ikke noe
-	      function () {
+	      }, function () {
 	        _this2.toogleMoveListener();
 	      });
 	    }
@@ -52182,7 +52185,6 @@
 	    value: function releaseDragger(e) {
 	      var _this3 = this;
 
-	      //console.log('release')
 	      this.setState({
 	        action: 'up',
 	        mouseoffset: 0
@@ -52193,21 +52195,21 @@
 	  }, {
 	    key: 'scroll',
 	    value: function scroll(e) {
-	      e.preventDefault();
-	      console.log(e);
-	      var y = void 0,
-	          fromtop = document.querySelector('.ReactListScroll').getBoundingClientRect().y;
+	      var y = void 0;
 	      //If event has delta (onMouseWheel-event)
 	      if (e.deltaY) {
-	        y = Math.round(this.state.draggerPos + e.deltaY);
-	        //startpos = y;
+	        e.preventDefault();
+
+	        //ØØMAAIZEBALLS Stolen from https://www.sitepoint.com/html5-javascript-mouse-wheel/
+	        var delta = Math.max(-1, Math.min(1, e.deltaY || -e.detail));
+	        y = this.state.draggerPos + delta * this.state.speed;
 	      } else if (e.clientY) {
-	          //calculate delta with positive or negative
-	          console.log(e.clientY - e.pageY);
-	          var delta = e.clientY - this.state.draggerPos;
-	          y = this.state.draggerPos + delta - fromtop - this.state.mouseoffset; //TODO: trekk museposisjon fra toppen av scrollelement
-	          //startpos = this.state.startpos + delta - fromtop;
-	        }
+	        //calculate delta with positive or negative
+	        var fromtop = _reactDom2.default.findDOMNode(this).getBoundingClientRect().top,
+	            //Y er undefined i chrome
+	        _delta = e.clientY - this.state.draggerPos;
+	        y = this.state.draggerPos + _delta - fromtop - this.state.mouseoffset;
+	      }
 
 	      if (y <= 0) {
 	        y = 0;
@@ -52222,11 +52224,10 @@
 	    }
 	  }, {
 	    key: 'render',
-	    //startpos: startpos //this might not be necessary in the end.
 	    value: function render() {
 	      return _react2.default.createElement(
 	        'div',
-	        { className: 'ReactListScroll', style: listStyles(this.state.height), onWheel: this.scroll.bind(this) },
+	        { className: 'ReactListScroll', style: listStyles(this.state.height), onMouseOut: this.out.bind(this), onMouseOver: this.over.bind(this), onWheel: this.scroll.bind(this) },
 	        _react2.default.createElement(
 	          'div',
 	          { className: 'ReactListScroll-scrollerwrap', style: scrollerwrapStyles() },
@@ -52253,7 +52254,7 @@
 	};
 	var scrollerwrapStyles = function scrollerwrapStyles() {
 	  return {
-	    width: '10px',
+	    width: '12px',
 	    height: '100%',
 	    position: 'absolute',
 	    backgroundColor: '#aaa',
@@ -52263,10 +52264,10 @@
 	var scrollerStyles = function scrollerStyles(data) {
 	  return {
 	    position: 'absolute',
-	    width: '6px',
+	    width: '7px',
 	    height: data.height + 'px',
 	    right: '0px',
-	    left: '2px',
+	    left: '3px',
 	    backgroundColor: '#000',
 	    transform: 'translate3D(0,' + data.y + 'px, 0)',
 	    borderRadius: '10px',
