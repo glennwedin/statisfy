@@ -48,7 +48,6 @@ class ReactListScroll extends React.Component {
     ReactDOM.findDOMNode(this).classList.remove('hover');
   }
 
-
   toogleMoveListener () {
     if(this.state.action === 'down') {
       window.addEventListener('mousemove', this.scroll);
