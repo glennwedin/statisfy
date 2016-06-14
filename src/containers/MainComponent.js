@@ -59,15 +59,15 @@ class MainComponent extends React.Component {
 			nope = (
 				<div className="nope_username">
 					<div className="row">
-						<div className="small-4 columns">
+						<div className="small-1 medium-4 columns">
 							&nbsp;
 						</div>
-						<div className="small-4 columns">
+						<div className="small-10 medium-4 columns">
 							<h1>Statisfy</h1>
 							<input id="username" type="text" placeholder="LastFM username" />
 							<button className="button" onClick={this.setUsername.bind(this)}>OK!</button>
 						</div>
-						<div className="small-4 columns">
+						<div className="small-1 medium-4 columns">
 							&nbsp;
 						</div>
 					</div>
@@ -80,7 +80,7 @@ class MainComponent extends React.Component {
 					<html lang="en">
 					<head>
 						<meta charSet="UTF-8" />
-						<meta name="viewport" content="width=device-width, initial-scale=1" />
+						<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 						<title>Statisfy</title>
 					</head>
 					<body>

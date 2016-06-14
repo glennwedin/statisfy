@@ -1,4 +1,5 @@
 import LocalDatabase from '../data/LocalDatabase';
+import fetch from 'isomorphic-fetch';
 
 /*
 	Set USER

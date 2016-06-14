@@ -25,6 +25,7 @@ class ReactListScroll extends React.Component {
 
   componentDidMount() {
     window.addEventListener('mouseup', this.releaseDragger);
+    window.addEventListener('touchend', this.releaseDragger);
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -51,8 +52,10 @@ class ReactListScroll extends React.Component {
   toogleMoveListener () {
     if(this.state.action === 'down') {
       window.addEventListener('mousemove', this.scroll);
+      window.addEventListener('touchmove', this.scroll);
     } else if(this.state.action === 'up'){
       window.removeEventListener('mousemove', this.scroll)
+      window.removeEventListener('touchmove', this.scroll)
     }
   }
 
@@ -76,14 +79,20 @@ class ReactListScroll extends React.Component {
 
   scroll(e) {
     let y;
-    //If event has delta (onMouseWheel-event)
+    e.preventDefault();
     if(e.deltaY) {
-      e.preventDefault();
-
+      //SCROLL
       //ØØMAAIZEBALLS Stolen from https://www.sitepoint.com/html5-javascript-mouse-wheel/
       let delta = Math.max(-1, Math.min(1, (e.deltaY || -e.detail)));
       y = this.state.draggerPos + (delta*this.state.speed);
-    } else if(e.clientY) { 
+    } /*else if(e.touches) {
+      //TOUCHSCROLL
+      //MÅ ha delta for å vite retning
+      let delta = Math.max(-1, Math.min(1, e.touches[0].clientY));
+      console.log(this.state.mouseoffset)
+      y = this.state.draggerPos + (delta*this.state.speed);
+    }*/ else if(e.clientY) { 
+      //DRAG
       //calculate delta with positive or negative
       let fromtop = ReactDOM.findDOMNode(this).getBoundingClientRect().top, //Y er undefined i chrome
       delta = e.clientY - this.state.draggerPos;
@@ -104,7 +113,7 @@ class ReactListScroll extends React.Component {
 
   render() {
     return(
-      <div className="ReactListScroll" style={listStyles(this.state.height)} onMouseOut={this.out.bind(this)} onMouseOver={this.over.bind(this)} onWheel={this.scroll.bind(this)}>
+      <div className="ReactListScroll" style={listStyles(this.state.height)} onMouseOut={this.out.bind(this)} onMouseOver={this.over.bind(this)} onTouchMove={this.scroll.bind(this)} onWheel={this.scroll.bind(this)}>
         <div className="ReactListScroll-scrollerwrap" style={scrollerwrapStyles()}>
           <div className="ReactListScroll-scroller" style={scrollerStyles({y:this.state.draggerPos, height:this.state.scrollerHeight})} onMouseDown={this.clickDragger.bind(this)}></div>
         </div>
