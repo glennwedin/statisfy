@@ -81,7 +81,7 @@ class ReactListScroll extends React.Component {
       action: 'up',
       mouseoffset: 0
     }, () => {
-      this.toogleMoveListener();
+      this.toggleMoveListener();
     });
   }
 
@@ -116,7 +116,7 @@ class ReactListScroll extends React.Component {
     this.setState({
       pct: (y/this.state.height)*100,
       draggerPos: y,
-      touchoffset: (e.touches[0]) ? e.touches[0].clientY : 0 
+      touchoffset: (e.touches) ? e.touches[0].clientY : 0 
     });
   }
 

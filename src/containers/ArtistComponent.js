@@ -41,6 +41,7 @@ class ArtistComponent extends React.Component {
 			<section className="row">
 				<div className="small-12 columns">
 					<h1>My artists</h1>
+					<p>This list may take some time to load and refresh depending on the number of artists in your database</p>
 					<ArtistStats page={page}/>
 				</div>
 			</section>

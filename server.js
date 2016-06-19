@@ -64121,7 +64121,7 @@
 	        action: 'up',
 	        mouseoffset: 0
 	      }, function () {
-	        _this3.toogleMoveListener();
+	        _this3.toggleMoveListener();
 	      });
 	    }
 	  }, {
@@ -64158,7 +64158,7 @@
 	      this.setState({
 	        pct: y / this.state.height * 100,
 	        draggerPos: y,
-	        touchoffset: e.touches[0] ? e.touches[0].clientY : 0
+	        touchoffset: e.touches ? e.touches[0].clientY : 0
 	      });
 	    }
 	  }, {
@@ -75480,6 +75480,11 @@
 							'h1',
 							null,
 							'My artists'
+						),
+						_react2.default.createElement(
+							'p',
+							null,
+							'This list may take some time to load and refresh depending on the number of artists in your database'
 						),
 						_react2.default.createElement(_ArtistStats2.default, { page: page })
 					)
