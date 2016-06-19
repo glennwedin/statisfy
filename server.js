@@ -64042,6 +64042,7 @@
 	      contentHeight: 0, //Placeholder for internal use
 	      scrollerHeight: 40,
 	      mouseoffset: 0,
+	      touchoffset: 0,
 	      speed: props.speed || 6
 	    };
 
@@ -64081,15 +64082,23 @@
 	      _reactDom2.default.findDOMNode(this).classList.remove('hover');
 	    }
 	  }, {
-	    key: 'toogleMoveListener',
-	    value: function toogleMoveListener() {
+	    key: 'toggleMoveListener',
+	    value: function toggleMoveListener() {
 	      if (this.state.action === 'down') {
 	        window.addEventListener('mousemove', this.scroll);
-	        window.addEventListener('touchmove', this.scroll);
+	        //window.addEventListener('touchmove', this.scroll);
 	      } else if (this.state.action === 'up') {
-	        window.removeEventListener('mousemove', this.scroll);
-	        window.removeEventListener('touchmove', this.scroll);
-	      }
+	          window.removeEventListener('mousemove', this.scroll);
+	          //window.removeEventListener('touchmove', this.scroll)
+	        }
+	    }
+	  }, {
+	    key: 'setTouchOffset',
+	    value: function setTouchOffset(e) {
+	      var offset = e.touches[0].clientY;
+	      this.setState({
+	        touchoffset: offset
+	      });
 	    }
 	  }, {
 	    key: 'clickDragger',
@@ -64100,7 +64109,7 @@
 	        action: 'down',
 	        mouseoffset: e.clientY - _reactDom2.default.findDOMNode(this).offsetTop - this.state.draggerPos
 	      }, function () {
-	        _this2.toogleMoveListener();
+	        _this2.toggleMoveListener();
 	      });
 	    }
 	  }, {
@@ -64121,24 +64130,24 @@
 	      var y = void 0;
 	      e.preventDefault();
 	      if (e.deltaY) {
-	        //SCROLL
-	        //ØØMAAIZEBALLS Stolen from https://www.sitepoint.com/html5-javascript-mouse-wheel/
+	        //Mousewheel-SCROLL
+	        //Stolen from https://www.sitepoint.com/html5-javascript-mouse-wheel/
 	        var delta = Math.max(-1, Math.min(1, e.deltaY || -e.detail));
 	        y = this.state.draggerPos + delta * this.state.speed;
-	      } /*else if(e.touches) {
+	      } else if (e.touches) {
 	        //TOUCHSCROLL
 	        //MÅ ha delta for å vite retning
-	        let delta = Math.max(-1, Math.min(1, e.touches[0].clientY));
-	        console.log(this.state.mouseoffset)
-	        y = this.state.draggerPos + (delta*this.state.speed);
-	        }*/else if (e.clientY) {
-	          //DRAG
-	          //calculate delta with positive or negative
-	          var fromtop = _reactDom2.default.findDOMNode(this).getBoundingClientRect().top,
-	              //Y er undefined i chrome
-	          _delta = e.clientY - this.state.draggerPos;
-	          y = this.state.draggerPos + _delta - fromtop - this.state.mouseoffset;
-	        }
+	        var _delta = this.state.touchoffset - e.touches[0].clientY;
+	        console.log(_delta);
+	        y = this.state.draggerPos + _delta;
+	      } else if (e.clientY) {
+	        //DRAG scrolldragger
+	        //calculate delta with positive or negative
+	        var fromtop = _reactDom2.default.findDOMNode(this).getBoundingClientRect().top,
+	            //Y er undefined i chrome
+	        _delta2 = e.clientY - this.state.draggerPos;
+	        y = this.state.draggerPos + _delta2 - fromtop - this.state.mouseoffset;
+	      }
 
 	      if (y <= 0) {
 	        y = 0;
@@ -64148,7 +64157,8 @@
 
 	      this.setState({
 	        pct: y / this.state.height * 100,
-	        draggerPos: y
+	        draggerPos: y,
+	        touchoffset: e.touches[0] ? e.touches[0].clientY : 0
 	      });
 	    }
 	  }, {
@@ -64156,7 +64166,13 @@
 	    value: function render() {
 	      return _react2.default.createElement(
 	        'div',
-	        { className: 'ReactListScroll', style: listStyles(this.state.height), onMouseOut: this.out.bind(this), onMouseOver: this.over.bind(this), onTouchMove: this.scroll.bind(this), onWheel: this.scroll.bind(this) },
+	        { className: 'ReactListScroll',
+	          style: listStyles(this.state.height),
+	          onMouseOut: this.out.bind(this),
+	          onMouseOver: this.over.bind(this),
+	          onTouchStart: this.setTouchOffset.bind(this),
+	          onTouchMove: this.scroll.bind(this),
+	          onWheel: this.scroll.bind(this) },
 	        _react2.default.createElement(
 	          'div',
 	          { className: 'ReactListScroll-scrollerwrap', style: scrollerwrapStyles() },
@@ -75761,12 +75777,12 @@
 						{ className: 'row' },
 						_react2.default.createElement(
 							'div',
-							{ className: 'small-12 medium-4 columns' },
+							{ className: 'small-10 medium-4 columns' },
 							_react2.default.createElement('input', { className: 'artist-filter', type: 'text', name: 'search', placeholder: 'Filter this list', onChange: this.search.bind(this) })
 						),
 						_react2.default.createElement(
 							'div',
-							{ className: 'small-12 medium-4 columns' },
+							{ className: 'small-2 medium-4 columns' },
 							_react2.default.createElement('a', { className: 'refresh ion-refresh', onClick: this.refresh.bind(this), title: 'Click to refresh this list. Data intensive operation.' })
 						)
 					),

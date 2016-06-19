@@ -171,10 +171,10 @@ class ArtistStats extends React.Component {
 
 			<div>
 				<div className="row">
-					<div className="small-12 medium-4 columns">
+					<div className="small-10 medium-4 columns">
 						<input className="artist-filter" type="text" name="search" placeholder="Filter this list" onChange={this.search.bind(this)} />
 					</div>
-					<div className="small-12 medium-4 columns">
+					<div className="small-2 medium-4 columns">
 						<a className="refresh ion-refresh" onClick={this.refresh.bind(this)} title="Click to refresh this list. Data intensive operation."></a>
 					</div>
 				</div>

@@ -16,6 +16,7 @@ class ReactListScroll extends React.Component {
       contentHeight: 0, //Placeholder for internal use
       scrollerHeight: 40,
       mouseoffset: 0,
+      touchoffset: 0,
       speed: props.speed || 6
     }
 
@@ -49,14 +50,21 @@ class ReactListScroll extends React.Component {
     ReactDOM.findDOMNode(this).classList.remove('hover');
   }
 
-  toogleMoveListener () {
+  toggleMoveListener () {
     if(this.state.action === 'down') {
       window.addEventListener('mousemove', this.scroll);
-      window.addEventListener('touchmove', this.scroll);
+      //window.addEventListener('touchmove', this.scroll);
     } else if(this.state.action === 'up'){
       window.removeEventListener('mousemove', this.scroll)
-      window.removeEventListener('touchmove', this.scroll)
+      //window.removeEventListener('touchmove', this.scroll)
     }
+  }
+
+  setTouchOffset(e) {
+    let offset = e.touches[0].clientY;
+    this.setState({
+      touchoffset: offset
+    });
   }
 
   clickDragger(e) {
@@ -64,7 +72,7 @@ class ReactListScroll extends React.Component {
       action: 'down',
       mouseoffset: e.clientY - ReactDOM.findDOMNode(this).offsetTop - this.state.draggerPos
     }, () => {
-      this.toogleMoveListener();
+      this.toggleMoveListener();
     })
   }
 
@@ -81,18 +89,18 @@ class ReactListScroll extends React.Component {
     let y;
     e.preventDefault();
     if(e.deltaY) {
-      //SCROLL
-      //ØØMAAIZEBALLS Stolen from https://www.sitepoint.com/html5-javascript-mouse-wheel/
+      //Mousewheel-SCROLL
+      //Stolen from https://www.sitepoint.com/html5-javascript-mouse-wheel/
       let delta = Math.max(-1, Math.min(1, (e.deltaY || -e.detail)));
       y = this.state.draggerPos + (delta*this.state.speed);
-    } /*else if(e.touches) {
+    } else if(e.touches) {
       //TOUCHSCROLL
       //MÅ ha delta for å vite retning
-      let delta = Math.max(-1, Math.min(1, e.touches[0].clientY));
-      console.log(this.state.mouseoffset)
-      y = this.state.draggerPos + (delta*this.state.speed);
-    }*/ else if(e.clientY) { 
-      //DRAG
+      let delta = this.state.touchoffset - e.touches[0].clientY;
+      console.log(delta)
+      y = this.state.draggerPos + (delta);
+    } else if(e.clientY) { 
+      //DRAG scrolldragger
       //calculate delta with positive or negative
       let fromtop = ReactDOM.findDOMNode(this).getBoundingClientRect().top, //Y er undefined i chrome
       delta = e.clientY - this.state.draggerPos;
@@ -108,12 +116,19 @@ class ReactListScroll extends React.Component {
     this.setState({
       pct: (y/this.state.height)*100,
       draggerPos: y,
+      touchoffset: (e.touches[0]) ? e.touches[0].clientY : 0 
     });
   }
 
   render() {
     return(
-      <div className="ReactListScroll" style={listStyles(this.state.height)} onMouseOut={this.out.bind(this)} onMouseOver={this.over.bind(this)} onTouchMove={this.scroll.bind(this)} onWheel={this.scroll.bind(this)}>
+      <div className="ReactListScroll" 
+            style={listStyles(this.state.height)} 
+            onMouseOut={this.out.bind(this)} 
+            onMouseOver={this.over.bind(this)} 
+            onTouchStart={this.setTouchOffset.bind(this)} 
+            onTouchMove={this.scroll.bind(this)} 
+            onWheel={this.scroll.bind(this)}>
         <div className="ReactListScroll-scrollerwrap" style={scrollerwrapStyles()}>
           <div className="ReactListScroll-scroller" style={scrollerStyles({y:this.state.draggerPos, height:this.state.scrollerHeight})} onMouseDown={this.clickDragger.bind(this)}></div>
         </div>
