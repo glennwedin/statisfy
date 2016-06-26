@@ -1,7 +1,7 @@
 var webpack = require('webpack');
 var path = require('path')
 
-var env = 'development';
+var env = 'production';
 
 module.exports = [
     {
