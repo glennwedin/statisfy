@@ -4,6 +4,7 @@ import MainComponent from "../containers/MainComponent";
 import UserComponent from "../containers/UserComponent";
 import ArtistComponent from "../containers/ArtistComponent";
 import FriendsComponent from "../containers/FriendsComponent";
+import InfoComponent from "../containers/InfoComponent";
 
 var mainroute = (history) => {
 	history = history || null;
@@ -14,6 +15,8 @@ var mainroute = (history) => {
 				<Route path="/artists" component={ArtistComponent}/>
 				<Route path="/recommendations" component={UserComponent}/>
 				<Route path="/friends" component={FriendsComponent}/>
+				<Route path="/artist/:id" component={InfoComponent}/>
+				<Route path="/track/:id" component={InfoComponent}/>
 			</Route>
 		</Router>
 	);
