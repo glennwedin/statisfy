@@ -27475,7 +27475,7 @@
 	Object.defineProperty(exports, "__esModule", {
 		value: true
 	});
-	exports.RECEIVE_FRIENDS = exports.REQUEST_FRIENDS = exports.RECEIVE_TOP_ARTISTS = exports.REQUEST_TOP_ARTISTS = exports.RECEIVE_STATS = exports.REQUEST_STATS = exports.SET_USER = undefined;
+	exports.RECEIVE_FRIENDS = exports.REQUEST_ARTIST = exports.REQUEST_TRACK = exports.REQUEST_FRIENDS = exports.RECEIVE_TOP_ARTISTS = exports.REQUEST_TOP_ARTISTS = exports.RECEIVE_STATS = exports.REQUEST_STATS = exports.SET_USER = undefined;
 	exports.setUser = setUser;
 	exports.getStats = getStats;
 	exports.getTopArtists = getTopArtists;
@@ -27504,7 +27504,7 @@
 	}
 
 	/*
-	* Fetch stats for user	
+	* Fetch stats for user
 	*/
 
 	var REQUEST_STATS = exports.REQUEST_STATS = 'REQUEST_STATS';
@@ -27642,6 +27642,22 @@
 		return {
 			type: REQUEST_FRIENDS,
 			user: user
+		};
+	}
+
+	var REQUEST_TRACK = exports.REQUEST_TRACK = 'REQUEST_TRACK';
+	function requestTrack(track) {
+		return {
+			type: REQUEST_TRACK,
+			track: track
+		};
+	}
+
+	var REQUEST_ARTIST = exports.REQUEST_ARTIST = 'REQUEST_ARTIST';
+	function requestTrack(artist) {
+		return {
+			type: REQUEST_ARTIST,
+			artist: artist
 		};
 	}
 
@@ -43428,7 +43444,7 @@
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
-			value: true
+	  value: true
 	});
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -43436,6 +43452,10 @@
 	var _react = __webpack_require__(1);
 
 	var _react2 = _interopRequireDefault(_react);
+
+	var _reactRouter = __webpack_require__(164);
+
+	var _actions = __webpack_require__(251);
 
 	var _reactRedux = __webpack_require__(227);
 
@@ -43448,41 +43468,82 @@
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	var InfoComponent = function (_React$Component) {
-			_inherits(InfoComponent, _React$Component);
+	  _inherits(InfoComponent, _React$Component);
 
-			function InfoComponent(props) {
-					_classCallCheck(this, InfoComponent);
+	  function InfoComponent(props) {
+	    _classCallCheck(this, InfoComponent);
 
-					return _possibleConstructorReturn(this, Object.getPrototypeOf(InfoComponent).call(this, props));
-			}
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(InfoComponent).call(this, props));
 
-			_createClass(InfoComponent, [{
-					key: 'render',
-					value: function render() {
-							return _react2.default.createElement(
-									'section',
-									{ className: 'row' },
-									_react2.default.createElement(
-											'div',
-											{ className: 'small-12 medium-8 columns' },
-											_react2.default.createElement(
-													'h1',
-													null,
-													'Artist'
-											),
-											_react2.default.createElement('div', { className: 'friends small-up-3 medium-up-3 large-up-3' })
-									),
-									_react2.default.createElement('div', { className: 'small-12 medium-1 columns' }),
-									_react2.default.createElement('div', { className: 'small-12 medium-3 columns' })
-							);
-					}
-			}]);
+	    _this.state = {
+	      name: "name",
+	      information: "information"
+	    };
+	    return _this;
+	  }
 
-			return InfoComponent;
+	  _createClass(InfoComponent, [{
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      //Load data from last.fm/artist
+	      var type = window.location.pathname.split('/')[1];
+	      if (type === "track") {
+	        //this.props.dispatch(requestTrack("trackname"));
+	      }
+	      if (type === "artist") {
+	        //this.props.dispatch(requestArtist("Artistname"));
+	      }
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      return _react2.default.createElement(
+	        'section',
+	        { className: 'row' },
+	        _react2.default.createElement(
+	          'div',
+	          { className: 'small-12 medium-8 columns' },
+	          _react2.default.createElement(
+	            'h1',
+	            null,
+	            this.state.name
+	          ),
+	          _react2.default.createElement(
+	            'div',
+	            { className: 'row' },
+	            _react2.default.createElement(
+	              'div',
+	              { className: 'small-4 columns' },
+	              _react2.default.createElement('img', { src: 'https://c1.staticflickr.com/9/8436/28464720156_d4529ac295_z.jpg', alt: '' })
+	            ),
+	            _react2.default.createElement(
+	              'div',
+	              { className: 'small-8 columns' },
+	              this.state.information,
+	              _react2.default.createElement(
+	                'p',
+	                null,
+	                'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse in ante nec felis imperdiet consequat in a magna. Ut et rutrum ligula. Nulla finibus nulla sed nunc suscipit egestas. Sed porttitor nulla sapien, id cursus tortor luctus ac. Aliquam in turpis justo. Pellentesque aliquam odio quis quam condimentum ullamcorper. Vivamus eget enim sit amet metus ultricies viverra ac a tortor. Duis pellentesque ante eget elit egestas dignissim. Donec finibus feugiat magna, at auctor orci mattis sit amet. Suspendisse ultricies quam non libero aliquet dignissim.'
+	              ),
+	              _react2.default.createElement(
+	                'p',
+	                null,
+	                'Fusce ultricies luctus libero. In vitae diam purus. Phasellus arcu nulla, congue quis dictum nec, blandit ut nisi. Ut ut eros purus. Morbi tempus aliquet vehicula. Morbi sed ex eu ante scelerisque pharetra sed et lorem. Donec dignissim scelerisque libero. Donec sollicitudin libero pretium, bibendum lectus id, ullamcorper enim. Praesent vitae lorem ipsum. Aenean velit enim, ornare ut velit blandit, blandit laoreet sapien. Donec posuere elementum consectetur. Vestibulum et fermentum felis.'
+	              )
+	            )
+	          )
+	        ),
+	        _react2.default.createElement('div', { className: 'small-12 medium-1 columns' }),
+	        _react2.default.createElement('div', { className: 'small-12 medium-3 columns' })
+	      );
+	    }
+	  }]);
+
+	  return InfoComponent;
 	}(_react2.default.Component);
 
 	InfoComponent = (0, _reactRedux.connect)(function (state) {
-			return state;
+	  return state;
 	})(InfoComponent);
 	exports.default = InfoComponent;
 

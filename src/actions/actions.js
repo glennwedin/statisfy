@@ -13,7 +13,7 @@ export function setUser(username) {
 }
 
 /*
-* Fetch stats for user	
+* Fetch stats for user
 */
 
 export const REQUEST_STATS = 'REQUEST_STATS'
@@ -52,7 +52,7 @@ export function getStats(user) {
 					console.log(err)
 				});
 			})
-		})	
+		})
 
 		Promise.all(promises).then((values) => {
 			let data = {
@@ -132,9 +132,9 @@ export function getTopArtists(user) {
 					recursive();
 				}
 			});
-			
+
 			//or fetch and insert
-			
+
 		});
 	}
 }
@@ -158,6 +158,22 @@ function requestFriends(user) {
     type: REQUEST_FRIENDS,
     user
   }
+}
+
+export const REQUEST_TRACK = 'REQUEST_TRACK';
+function requestTrack(track) {
+	return {
+		type: REQUEST_TRACK,
+		track
+	}
+}
+
+export const REQUEST_ARTIST = 'REQUEST_ARTIST';
+function requestTrack(artist) {
+	return {
+		type: REQUEST_ARTIST,
+		artist
+	}
 }
 
 //deprecated ?
