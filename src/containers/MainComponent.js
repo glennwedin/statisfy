@@ -11,7 +11,7 @@ class MainComponent extends React.Component {
 
 	constructor (props) {
 		super(props);
-		
+
 		this.state = {
 			loading: store.getState().stats.isFetching,
 		}
@@ -40,10 +40,16 @@ class MainComponent extends React.Component {
 		return false;
 	}
 
-	setUsername() {
+	setUsername () {
 		let username = document.getElementById('username').value;
 		window.localStorage.setItem('statisfy:username', username);
 		store.dispatch(setUser(username));
+	}
+
+	onEnter (e) {
+		if(e.which === 13) {
+			document.getElementById('ok-button').click();
+		}
 	}
 
 	render () {
@@ -64,8 +70,8 @@ class MainComponent extends React.Component {
 						</div>
 						<div className="small-10 medium-4 columns">
 							<h1>Statisfy</h1>
-							<input id="username" type="text" placeholder="LastFM username" />
-							<button className="button" onClick={this.setUsername.bind(this)}>OK!</button>
+							<input id="username" type="text" placeholder="LastFM username" onKeyPress={this.onEnter.bind(this)} />
+							<button id="ok-button" className="button" onClick={this.setUsername.bind(this)}>OK!</button>
 						</div>
 						<div className="small-1 medium-4 columns">
 							&nbsp;
@@ -87,7 +93,7 @@ class MainComponent extends React.Component {
 						{nope}
 						<TopMenu />
 						<div id="app">{this.props.children}</div>
-						<script type="text/javascript" src="js/app.js"></script>
+						<script type="text/javascript" src="http://localhost:3002/js/app.js"></script>
 						</body>
 					</html>
 				</Provider>

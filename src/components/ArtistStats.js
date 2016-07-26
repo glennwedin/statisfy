@@ -20,7 +20,7 @@ class ArtistStats extends React.Component {
 	componentDidMount() {
 		this.setState({
 			totalpages: Math.ceil(this.props.stats.topartiststats.length/this.state.prpage)
-		});		
+		});
 	}
 
 	componentDidUpdate(prevProps, prevState) {
@@ -28,7 +28,7 @@ class ArtistStats extends React.Component {
 			this.setState({
 				totalpages: Math.ceil(this.props.stats.topartiststats.length/this.state.prpage)
 			})
-		}     
+		}
 	}
 
 	setPage(e) {
@@ -101,7 +101,7 @@ class ArtistStats extends React.Component {
 		let f = this.state.filter;
 		f = [];
 		if(value.length > 0) {
-			this.props.stats.topartiststats.filter((obj, i) => {			
+			this.props.stats.topartiststats.filter((obj, i) => {
 				if((obj.name.toLowerCase()).indexOf(value.toLowerCase()) > -1) {
 					if(f.length >= 24) { return false; }
 					f.push(obj);
@@ -130,13 +130,18 @@ class ArtistStats extends React.Component {
 		};
 	}
 
-	render () {
+	goTo(name) {
+		console.log(name)
+		browserHistory.push('/artist/'+name);
+	}
+
+	render() {
 		let artistGrid = "",
 		pagecount = 0;
 		if(this.state.filter.length > 0) {
 			artistGrid = this.state.filter.map((a, i) => {
 				return (
-					<div className="column artist-grid-item" style={{backgroundImage:'url('+a.image[2]['#text']+')'}} key={i}>
+					<div onClick={this.goTo.bind(this, a.name)} className="column artist-grid-item" style={{backgroundImage:'url('+a.image[2]['#text']+')'}} key={i}>
 						<div className="title">{ a.name }</div>
 						<div className="playcount">{ a.playcount }</div>
 					</div>
@@ -144,16 +149,16 @@ class ArtistStats extends React.Component {
 			})
 		} else if(this.props.stats.topartiststats) {
 			artistGrid = this.props.stats.topartiststats.map((a, i) => {
-				
+
 				//Test if "i" is less than amount pr pagte and that the page starts at correct item
-				/*if(pagecount >= this.state.prpage && ((this.state.currentpage*this.state.prpage)-this.state.prpage) > pagecount ) { 
-					return; 
+				/*if(pagecount >= this.state.prpage && ((this.state.currentpage*this.state.prpage)-this.state.prpage) > pagecount ) {
+					return;
 				}*/
 				//console.log(this.state.currentpage*this.state.prpage)
 				if(pagecount < this.state.prpage && i >= (this.state.currentpage*this.state.prpage)-this.state.prpage) {
 					pagecount++;
 					return (
-						<div className="column artist-grid-item" style={{backgroundImage:'url('+a.image[2]['#text']+')'}} key={i}>
+						<div onClick={this.goTo.bind(this, a.name)} className="column artist-grid-item" style={{backgroundImage:'url('+a.image[2]['#text']+')'}} key={i}>
 							<div className="title">{ a.name }</div>
 							<div className="playcount">{ a.playcount }</div>
 						</div>
