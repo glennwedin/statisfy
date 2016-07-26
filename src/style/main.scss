@@ -122,6 +122,10 @@ h1{
 	color: #fff;
 	border: 1px solid #eee;
 	position: relative;
+	cursor: pointer;
+	&:hover{
+		opacity: 0.9;
+	}
 	> .title {
 		position: absolute;
 		bottom: 1em;
@@ -183,7 +187,7 @@ h1{
     top: 0;
     padding: 40vh 0 0;
     z-index: 11;
-	
+
 	h1{
 		text-align: center;
 		font-size: 3em;
