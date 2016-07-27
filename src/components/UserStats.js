@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import ReactListScroll from './ReactListScroll';
+import ReactListScroll from 'reactlistscroll';
 
 class UserStats extends React.Component {
 
@@ -43,7 +43,7 @@ class UserStats extends React.Component {
 		}
 
 		return (
-			<ReactListScroll speed="10" height="500">
+			<ReactListScroll height="500">
 				<div className="table">
 					<div className="tbody">
 						{list}

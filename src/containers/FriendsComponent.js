@@ -6,8 +6,6 @@ class FriendsComponent extends React.Component {
 
 	constructor(props) {
 		super(props);
-
-		console.log('props', props)
 	}
 
 	componentDidMount() {

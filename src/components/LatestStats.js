@@ -1,12 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import moment from 'moment';
-import ReactListScroll from './ReactListScroll';
+import ReactListScroll from 'reactlistscroll';
 
 class LatestStats extends React.Component {
 
 	componentDidMount() {
-
 	}
 
 	showOptions (e) {
@@ -60,7 +59,7 @@ class LatestStats extends React.Component {
 		}
 
 		return (
-			<ReactListScroll speed="10" height="500">
+			<ReactListScroll height="500">
 					<div className="table">
 						<div className="tbody">
 							{list}

@@ -234,6 +234,35 @@ h1{
     text-align: right;
 }
 
+.infocontent{
+	position: relative;
+}
+
+.show{
+	text-align: center;
+	background-color: #EEEEEE;
+	position: absolute;
+	left: 0;
+	right: 0;
+	width: 190px;
+	margin: -8px auto;
+	cursor: pointer;
+	border: 1px solid #eee;
+
+	&:hover{
+		border: 1px solid #ccc;
+	}
+}
+
+.b50p{
+	border-radius: 50%;
+}
+
+.hidden{
+	display: none;
+}
+
+/*
 .ReactListScroll{
 	margin-bottom: 3em;
 }
@@ -257,7 +286,7 @@ h1{
 		transition: background-color .3s ease-out;
 	}
 }
-
+*/
 
 ///LOADER
 .loader {

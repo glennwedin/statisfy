@@ -124,11 +124,9 @@ export function getTopArtists(user) {
 			//request data from localdb and dispatch
 			db.get(user).then((result) => {
 				if(result.length > 0) {
-					console.log('res', user, result.length)
 					db.close();
 					dispatch(receiveTopArtists(user, result))
 				} else{
-					console.log('kjør recursive')
 					recursive();
 				}
 			});
@@ -160,22 +158,6 @@ function requestFriends(user) {
   }
 }
 
-export const REQUEST_TRACK = 'REQUEST_TRACK';
-function requestTrack(track) {
-	return {
-		type: REQUEST_TRACK,
-		track
-	}
-}
-
-export const REQUEST_ARTIST = 'REQUEST_ARTIST';
-function requestTrack(artist) {
-	return {
-		type: REQUEST_ARTIST,
-		artist
-	}
-}
-
 //deprecated ?
 export const RECEIVE_FRIENDS = 'RECEIVE_FRIENDS'
 function receiveFriends(user, json) {
@@ -194,8 +176,44 @@ export function getFriends(user) {
 		fetch('http://ws.audioscrobbler.com/2.0/?method=user.getfriends&user='+user+'&api_key=484711f72a2c24bf969ab0e30abe3d6a&format=json')
 		.then(response => response.json())
 		.then(json => {
-			console.log(json.friends.user)
 			dispatch(receiveFriends(user, json.friends.user));
+		}).catch(err => {
+			console.log(err);
+		})
+	}
+}
+
+export const REQUEST_INFO = 'REQUEST_INFO';
+function requestInfo(name) {
+	return {
+		type: REQUEST_INFO,
+		name
+	}
+}
+
+export const RECEIVE_INFO = 'RECEIVE_INFO';
+function receiveInfo(name, artist) {
+	return {
+		type: RECEIVE_INFO,
+		name,
+		info: artist
+	}
+}
+
+export function getInfo(name, type) {
+	return function (dispatch) {
+		dispatch(requestInfo(name));
+		let url = '';
+		if(type === "artist") {
+			url = 'http://ws.audioscrobbler.com/2.0/?method=artist.getinfo&artist='+name+'&api_key=484711f72a2c24bf969ab0e30abe3d6a&format=json';
+		} else if(type === "track") {
+			return false;
+			url = 'http://ws.audioscrobbler.com/2.0/?method=track.getInfo&api_key=484711f72a2c24bf969ab0e30abe3d6a&artist=cher&track=believe&format=json';
+		}
+		fetch(url)
+		.then(response => response.json())
+		.then(json => {
+			dispatch(receiveInfo(name, json.artist));
 		}).catch(err => {
 			console.log(err);
 		})

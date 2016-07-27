@@ -8,7 +8,6 @@ class ArtistStats extends React.Component {
 	constructor(props) {
 		super(props);
 
-		console.log(props)
 		this.state = {
 			filter: [],
 			currentpage: props.page,
@@ -63,7 +62,6 @@ class ArtistStats extends React.Component {
 	}
 
 	pagination() {
-		console.log(this.state.filter)
 		if(this.props.stats.topartiststats && this.state.filter.length === 0) {
 			//let totalpages = Math.ceil(this.props.stats.topartiststats.length/this.state.prpage) //this.props.stats.topartiststats['@attr'].totalPages;
 
@@ -117,7 +115,6 @@ class ArtistStats extends React.Component {
 	//Not working. It only deletes the database...
 	refresh(e){
 		e.preventDefault();
-		console.log(this.props.user.username)
 		let delReq = window.indexedDB.deleteDatabase(this.props.user.username);
 		delReq.onsuccess = () => {
 			this.props.dispatch(getTopArtists(this.props.user.username));
@@ -131,7 +128,6 @@ class ArtistStats extends React.Component {
 	}
 
 	goTo(name) {
-		console.log(name)
 		browserHistory.push('/artist/'+name);
 	}
 
@@ -183,7 +179,7 @@ class ArtistStats extends React.Component {
 						<a className="refresh ion-refresh" onClick={this.refresh.bind(this)} title="Click to refresh this list. Data intensive operation."></a>
 					</div>
 				</div>
-				<div className="small-up-3 medium-up-3 large-up-8">
+				<div className="small-up-3 medium-up-4 large-up-8">
 					{artistGrid}
 				</div>
 				<div>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { browserHistory } from 'react-router';
-import ReactListScroll from './ReactListScroll';
+import ReactListScroll from 'reactlistscroll';
 
 class TopAlbums extends React.Component {
 
@@ -14,7 +14,6 @@ class TopAlbums extends React.Component {
 	}
 
 	render() {
-		console.log('albums', this.props)
 		let list = [];
 
 		if(this.props.stats.userstats.topalbums) {
@@ -44,7 +43,7 @@ class TopAlbums extends React.Component {
 		}
 
 		return (
-			<ReactListScroll speed="10" height="500">
+			<ReactListScroll height="500">
 				<div className="table">
 					<div className="tbody">
 						{list}

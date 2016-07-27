@@ -14,7 +14,6 @@ class ArtistComponent extends React.Component {
 	}
 
 	componentDidMount() {
-		console.info('mount: ArtistComponent')
 		if(this.props.location.query.page) {
 			this.setState({
 				page: this.props.location.query.page
