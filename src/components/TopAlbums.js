@@ -13,6 +13,10 @@ class TopAlbums extends React.Component {
 		}
 	}
 
+	goTo(type, name) {
+		browserHistory.push('/'+type+'/'+name);
+	}
+
 	render() {
 		let list = [];
 
@@ -20,7 +24,7 @@ class TopAlbums extends React.Component {
 			let albumstat = this.props.stats.userstats.topalbums;
 			list = albumstat.album.map((el, i) => {
 				return (
-					<div key={i} className="tr">
+					<div key={i} onClick={this.goTo.bind(this, 'album', el.name)} className="tr">
 						<div className="td">
 							<div style={styles(el.image[1]['#text'])}></div>
 						</div>

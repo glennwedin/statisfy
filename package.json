@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "start": "node server.js",
-    "dev:watch": "webpack --watch",
+    "dev:watch": "webpack --watch -F & nodemon server.js",
     "build": "webpack --optimize-minimize"
   },
   "author": "Glenn Wedin <glenn.wedin@gmail.com> (http://www.wedinweb.no)",

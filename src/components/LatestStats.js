@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import moment from 'moment';
+import { browserHistory } from 'react-router';
 import ReactListScroll from 'reactlistscroll';
 
 class LatestStats extends React.Component {
@@ -8,8 +9,8 @@ class LatestStats extends React.Component {
 	componentDidMount() {
 	}
 
-	showOptions (e) {
-		let tr = e.target;
+	goTo(type, name) {
+		browserHistory.push('/'+type+'/'+name);
 	}
 
 	render () {
@@ -33,7 +34,7 @@ class LatestStats extends React.Component {
 					}
 				}
 				return (
-					<div key={i} onClick={this.showOptions.bind(this)} className="tr">
+					<div key={i} onClick={this.goTo.bind(this, 'track', el.name)} className="tr">
 						<div className="td">
 							<div style={styles(el.image[1]['#text'])}></div>
 						</div>

@@ -17,6 +17,7 @@ var mainroute = (history) => {
 				<Route path="/friends" component={FriendsComponent}/>
 				<Route path="/artist/:id" component={InfoComponent} />
 				<Route path="/track/:id" component={InfoComponent} />
+				<Route path="/album/:id" component={InfoComponent} />
 			</Route>
 		</Router>
 	);

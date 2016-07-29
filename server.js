@@ -49172,7 +49172,8 @@
 				_react2.default.createElement(_reactRouter.Route, { path: "/recommendations", component: _UserComponent2.default }),
 				_react2.default.createElement(_reactRouter.Route, { path: "/friends", component: _FriendsComponent2.default }),
 				_react2.default.createElement(_reactRouter.Route, { path: "/artist/:id", component: _InfoComponent2.default }),
-				_react2.default.createElement(_reactRouter.Route, { path: "/track/:id", component: _InfoComponent2.default })
+				_react2.default.createElement(_reactRouter.Route, { path: "/track/:id", component: _InfoComponent2.default }),
+				_react2.default.createElement(_reactRouter.Route, { path: "/album/:id", component: _InfoComponent2.default })
 			)
 		);
 	};
@@ -51283,7 +51284,8 @@
 			case _actions.REQUEST_INFO:
 				return Object.assign({}, state, {
 					isFetching: true,
-					didInvalidate: false
+					didInvalidate: false,
+					info: null
 				});
 				break;
 			case _actions.RECEIVE_INFO:
@@ -51535,11 +51537,21 @@
 			} else if (type === "track") {
 				return false;
 				url = 'http://ws.audioscrobbler.com/2.0/?method=track.getInfo&api_key=484711f72a2c24bf969ab0e30abe3d6a&artist=cher&track=believe&format=json';
+			} else if (type === "album") {
+				return false;
+				url = 'http://ws.audioscrobbler.com/2.0/?method=album.getInfo&api_key=484711f72a2c24bf969ab0e30abe3d6a&artist=cher&album=believe&format=json';
 			}
 			(0, _isomorphicFetch2.default)(url).then(function (response) {
 				return response.json();
 			}).then(function (json) {
-				dispatch(receiveInfo(name, json.artist));
+				console.log('json', json);
+				if (json.artist) {
+					dispatch(receiveInfo(name, json.artist));
+				} else if (json.track) {
+					dispatch(receiveInfo(name, json.track));
+				} else if (json.album) {
+					dispatch(receiveInfo(name, json.album));
+				}
 			}).catch(function (err) {
 				console.log(err);
 			});
@@ -63815,6 +63827,8 @@
 
 	var _reactRedux = __webpack_require__(305);
 
+	var _reactRouter = __webpack_require__(111);
+
 	var _reactlistscroll = __webpack_require__(370);
 
 	var _reactlistscroll2 = _interopRequireDefault(_reactlistscroll);
@@ -63840,9 +63854,9 @@
 			key: 'componentDidMount',
 			value: function componentDidMount() {}
 		}, {
-			key: 'showOptions',
-			value: function showOptions(e) {
-				var tr = e.target;
+			key: 'goTo',
+			value: function goTo(type, name) {
+				_reactRouter.browserHistory.push('/' + type + '/' + name);
 			}
 		}, {
 			key: 'render',
@@ -63856,7 +63870,7 @@
 					list = trackstat.track.map(function (el, i) {
 						return _react2.default.createElement(
 							'div',
-							{ key: i, onClick: _this2.showOptions.bind(_this2), className: 'tr' },
+							{ key: i, onClick: _this2.goTo.bind(_this2, 'track', el.name), className: 'tr' },
 							_react2.default.createElement(
 								'div',
 								{ className: 'td' },
@@ -65036,6 +65050,8 @@
 
 	var _moment2 = _interopRequireDefault(_moment);
 
+	var _reactRouter = __webpack_require__(111);
+
 	var _reactlistscroll = __webpack_require__(370);
 
 	var _reactlistscroll2 = _interopRequireDefault(_reactlistscroll);
@@ -65061,9 +65077,9 @@
 			key: 'componentDidMount',
 			value: function componentDidMount() {}
 		}, {
-			key: 'showOptions',
-			value: function showOptions(e) {
-				var tr = e.target;
+			key: 'goTo',
+			value: function goTo(type, name) {
+				_reactRouter.browserHistory.push('/' + type + '/' + name);
 			}
 		}, {
 			key: 'render',
@@ -65091,7 +65107,7 @@
 						}
 						return _react2.default.createElement(
 							'div',
-							{ key: i, onClick: _this2.showOptions.bind(_this2), className: 'tr' },
+							{ key: i, onClick: _this2.goTo.bind(_this2, 'track', el.name), className: 'tr' },
 							_react2.default.createElement(
 								'div',
 								{ className: 'td' },
@@ -75463,8 +75479,15 @@
 		}
 
 		_createClass(TopAlbums, [{
+			key: 'goTo',
+			value: function goTo(type, name) {
+				_reactRouter.browserHistory.push('/' + type + '/' + name);
+			}
+		}, {
 			key: 'render',
 			value: function render() {
+				var _this2 = this;
+
 				var list = [];
 
 				if (this.props.stats.userstats.topalbums) {
@@ -75472,7 +75495,7 @@
 					list = albumstat.album.map(function (el, i) {
 						return _react2.default.createElement(
 							'div',
-							{ key: i, className: 'tr' },
+							{ key: i, onClick: _this2.goTo.bind(_this2, 'album', el.name), className: 'tr' },
 							_react2.default.createElement(
 								'div',
 								{ className: 'td' },
@@ -76108,11 +76131,8 @@
 	      var name = this.props.routeParams.id;
 	      //Load data from last.fm/artist
 	      var type = window.location.pathname.split('/')[1];
-	      if (type === "track") {
-	        this.props.dispatch((0, _actions.getInfo)(name, "track"));
-	      }
-	      if (type === "artist") {
-	        this.props.dispatch((0, _actions.getInfo)(name, "artist"));
+	      if (type) {
+	        this.props.dispatch((0, _actions.getInfo)(name, type));
 	      }
 	    }
 	  }, {
@@ -76137,6 +76157,11 @@
 	      }
 	    }
 	  }, {
+	    key: 'back',
+	    value: function back() {
+	      _reactRouter.browserHistory.goBack();
+	    }
+	  }, {
 	    key: 'render',
 	    value: function render() {
 	      function createMarkup(content) {
@@ -76147,12 +76172,22 @@
 	      var name = '',
 	          summary = '',
 	          content = '',
-	          image = '';
+	          image = '',
+	          loading = true;
 	      if (this.props.artistortrack.info) {
 	        name = this.props.artistortrack.info.name;
 	        summary = this.props.artistortrack.info.bio.summary;
 	        content = this.props.artistortrack.info.bio.content;
 	        image = _react2.default.createElement('img', { className: 'b50p', src: this.props.artistortrack.info.image[3]['#text'], alt: '' });
+	        loading = this.props.artistortrack.info.isFetching;
+	      }
+
+	      if (loading) {
+	        return _react2.default.createElement(
+	          'div',
+	          { className: '' },
+	          _react2.default.createElement('div', { className: 'loader' })
+	        );
 	      }
 
 	      return _react2.default.createElement(
@@ -76183,6 +76218,11 @@
 	            ),
 	            _react2.default.createElement('hr', null)
 	          )
+	        ),
+	        _react2.default.createElement(
+	          'div',
+	          { className: 'backbar', onClick: this.back.bind(this) },
+	          'Back'
 	        )
 	      );
 	    }

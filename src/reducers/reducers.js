@@ -84,7 +84,8 @@ function artistortrack(state = {
 		case REQUEST_INFO:
 			return Object.assign({}, state, {
 				isFetching: true,
-				didInvalidate: false
+				didInvalidate: false,
+				info: null
 			});
 			break;
 		case RECEIVE_INFO:

@@ -209,11 +209,21 @@ export function getInfo(name, type) {
 		} else if(type === "track") {
 			return false;
 			url = 'http://ws.audioscrobbler.com/2.0/?method=track.getInfo&api_key=484711f72a2c24bf969ab0e30abe3d6a&artist=cher&track=believe&format=json';
-		}
+		}	else if(type === "album") {
+		 return false;
+		 url = 'http://ws.audioscrobbler.com/2.0/?method=album.getInfo&api_key=484711f72a2c24bf969ab0e30abe3d6a&artist=cher&album=believe&format=json';
+	 }
 		fetch(url)
 		.then(response => response.json())
 		.then(json => {
-			dispatch(receiveInfo(name, json.artist));
+			console.log('json', json)
+			if(json.artist) {
+				dispatch(receiveInfo(name, json.artist));
+			} else if(json.track) {
+				dispatch(receiveInfo(name, json.track));
+			} else if(json.album) {
+				dispatch(receiveInfo(name, json.album));
+			}
 		}).catch(err => {
 			console.log(err);
 		})

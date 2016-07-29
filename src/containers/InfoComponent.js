@@ -13,11 +13,8 @@ class InfoComponent extends React.Component {
     let name = this.props.routeParams.id;
     //Load data from last.fm/artist
     let type = window.location.pathname.split('/')[1];
-    if(type === "track") {
-      this.props.dispatch(getInfo(name, "track"));
-    }
-    if(type === "artist") {
-      this.props.dispatch(getInfo(name, "artist"));
+    if(type) {
+      this.props.dispatch(getInfo(name, type));
     }
   }
 
@@ -40,6 +37,10 @@ class InfoComponent extends React.Component {
     }
   }
 
+  back() {
+    browserHistory.goBack();
+  }
+
   render () {
     function createMarkup(content) {
       content = '<p>'+content.replace(/\n/g, "<br />")+'</p>';
@@ -49,12 +50,18 @@ class InfoComponent extends React.Component {
     let name = '',
     summary = '',
     content = '',
-    image = '';
+    image = '',
+    loading = true;
     if(this.props.artistortrack.info) {
       name = this.props.artistortrack.info.name;
       summary = this.props.artistortrack.info.bio.summary;
       content = this.props.artistortrack.info.bio.content;
       image = <img className="b50p" src={this.props.artistortrack.info.image[3]['#text']} alt="" />
+      loading = this.props.artistortrack.info.isFetching;
+    }
+
+    if(loading) {
+      return (<div className=""><div className="loader"></div></div>)
     }
 
     return (
@@ -71,6 +78,7 @@ class InfoComponent extends React.Component {
             <hr />
           </div>
         </div>
+        <div className="backbar" onClick={this.back.bind(this)}>Back</div>
 			</section>
     )
   }
