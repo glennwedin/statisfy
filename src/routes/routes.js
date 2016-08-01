@@ -4,10 +4,13 @@ import MainComponent from "../containers/MainComponent";
 import UserComponent from "../containers/UserComponent";
 import ArtistComponent from "../containers/ArtistComponent";
 import FriendsComponent from "../containers/FriendsComponent";
-import InfoComponent from "../containers/InfoComponent";
+import ArtistInfoComponent from "../containers/ArtistInfoComponent";
+import AlbumInfoComponent from "../containers/AlbumInfoComponent";
+import TrackInfoComponent from "../containers/TrackInfoComponent";
 
 var mainroute = (history) => {
 	history = history || null;
+
 	return (
 		<Router history={history}>
 			<Route path="/" component={MainComponent} >
@@ -15,9 +18,9 @@ var mainroute = (history) => {
 				<Route path="/artists" component={ArtistComponent}/>
 				<Route path="/recommendations" component={UserComponent}/>
 				<Route path="/friends" component={FriendsComponent}/>
-				<Route path="/artist/:id" component={InfoComponent} />
-				<Route path="/track/:id" component={InfoComponent} />
-				<Route path="/album/:id" component={InfoComponent} />
+				<Route path="/artist/:id" component={ArtistInfoComponent} />
+				<Route path="/album/:artist/:id" component={AlbumInfoComponent} />
+				<Route path="/track/:artist/:id" component={TrackInfoComponent} />
 			</Route>
 		</Router>
 	);

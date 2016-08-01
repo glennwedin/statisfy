@@ -287,6 +287,9 @@ h1{
 .ReactListScroll-content{
 	z-index: 1 !important;
 }
+.ReactListScroll-scrollerwrap{
+	z-index: 2;
+}
 /*
 //ReactlistScroller
 .ReactListScroll-scrollerwrap{

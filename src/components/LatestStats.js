@@ -9,8 +9,8 @@ class LatestStats extends React.Component {
 	componentDidMount() {
 	}
 
-	goTo(type, name) {
-		browserHistory.push('/'+type+'/'+name);
+	goTo(type, name, name2) {
+		browserHistory.push('/'+type+'/'+name+'/'+name2);
 	}
 
 	render () {
@@ -34,7 +34,7 @@ class LatestStats extends React.Component {
 					}
 				}
 				return (
-					<div key={i} onClick={this.goTo.bind(this, 'track', el.name)} className="tr">
+					<div key={i} onClick={this.goTo.bind(this, 'track', el.artist['#text'], el.name)} className="tr">
 						<div className="td">
 							<div style={styles(el.image[1]['#text'])}></div>
 						</div>

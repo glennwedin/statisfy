@@ -200,23 +200,20 @@ function receiveInfo(name, artist) {
 	}
 }
 
-export function getInfo(name, type) {
+export function getInfo(name, type, name2) {
 	return function (dispatch) {
 		dispatch(requestInfo(name));
 		let url = '';
 		if(type === "artist") {
 			url = 'http://ws.audioscrobbler.com/2.0/?method=artist.getinfo&artist='+name+'&api_key=484711f72a2c24bf969ab0e30abe3d6a&format=json';
 		} else if(type === "track") {
-			return false;
-			url = 'http://ws.audioscrobbler.com/2.0/?method=track.getInfo&api_key=484711f72a2c24bf969ab0e30abe3d6a&artist=cher&track=believe&format=json';
+			url = 'http://ws.audioscrobbler.com/2.0/?method=track.getInfo&api_key=484711f72a2c24bf969ab0e30abe3d6a&artist='+name+'&track='+name2+'&format=json';
 		}	else if(type === "album") {
-		 return false;
-		 url = 'http://ws.audioscrobbler.com/2.0/?method=album.getInfo&api_key=484711f72a2c24bf969ab0e30abe3d6a&artist=cher&album=believe&format=json';
+		 url = 'http://ws.audioscrobbler.com/2.0/?method=album.getInfo&api_key=484711f72a2c24bf969ab0e30abe3d6a&artist='+name+'&album='+name2+'&format=json';
 	 }
 		fetch(url)
 		.then(response => response.json())
 		.then(json => {
-			console.log('json', json)
 			if(json.artist) {
 				dispatch(receiveInfo(name, json.artist));
 			} else if(json.track) {
