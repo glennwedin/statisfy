@@ -2,6 +2,7 @@ import React from 'react';
 import { browserHistory } from 'react-router';
 import { getInfo } from '../actions/actions';
 import { connect } from 'react-redux';
+import moment from 'moment';
 
 class TrackInfoComponent extends React.Component {
 
@@ -50,13 +51,21 @@ class TrackInfoComponent extends React.Component {
 
     let name = '',
     artistname = '',
+    album = '',
+    duration = '',
+    listeners = '',
+    count = '',
     summary = '',
     content = '',
     image = '',
     loading = true;
     if(this.props.artistortrack.info) {
       name = this.props.artistortrack.info.name;
+      duration = moment(this.props.artistortrack.info.duration/1000/60, 'mm:ss').format('mm:ss');
+      listeners = this.props.artistortrack.info.listeners;
+      count = this.props.artistortrack.info.playcount;
       artistname = this.props.artistortrack.info.artist.name;
+      album = this.props.artistortrack.info.album.title;
       if(this.props.artistortrack.info.wiki) {
         summary = this.props.artistortrack.info.wiki.summary;
         content = this.props.artistortrack.info.wiki.content;
@@ -76,6 +85,9 @@ class TrackInfoComponent extends React.Component {
         </div>
         <div className="medium-8 columns">
           <h1>{artistname} &ndash; {name}</h1>
+          <div>{duration}</div>
+          <div>Listeners: {listeners}</div>
+          <div>Played: {count}</div>
           <div className="infocontent">
             <div className="summary" dangerouslySetInnerHTML={createMarkup(summary)}></div>
             <div className="hidden showtoggler" dangerouslySetInnerHTML={createMarkup(content)}></div>
