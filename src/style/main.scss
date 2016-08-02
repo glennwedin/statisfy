@@ -117,6 +117,14 @@ h1{
     z-index: 10;
 }
 
+.centeredImage{
+	text-align: center;
+
+	img{
+		margin: 0 0 4em;
+	}
+}
+
 .artist-grid-item{
 	height: 150px;
 	background-size:cover;
@@ -238,6 +246,16 @@ h1{
 
 .infocontent{
 	position: relative;
+	padding: 0 1em;
+
+	h1{
+		margin: 0 0 .5em;
+		color: #000;
+	}
+	a{
+		color: #666;
+		border-bottom: 1px solid;
+	}
 }
 
 .show{

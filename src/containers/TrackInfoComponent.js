@@ -60,15 +60,15 @@ class TrackInfoComponent extends React.Component {
     image = '',
     loading = true;
     if(this.props.artistortrack.info) {
-      name = this.props.artistortrack.info.name;
+      name = this.props.artistortrack.info.name || '';
       duration = moment(this.props.artistortrack.info.duration/1000/60, 'mm:ss').format('mm:ss');
       listeners = this.props.artistortrack.info.listeners;
       count = this.props.artistortrack.info.playcount;
       artistname = this.props.artistortrack.info.artist.name;
       album = this.props.artistortrack.info.album.title;
       if(this.props.artistortrack.info.wiki) {
-        summary = this.props.artistortrack.info.wiki.summary;
-        content = this.props.artistortrack.info.wiki.content;
+        summary = this.props.artistortrack.info.wiki.summary || '';
+        content = this.props.artistortrack.info.wiki.content || '';
       }
       //image = <img className="b50p" src={this.props.artistortrack.info.image[3]['#text']} alt="" />
       loading = this.props.artistortrack.info.isFetching;

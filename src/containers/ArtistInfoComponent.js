@@ -67,11 +67,11 @@ class ArtistInfoComponent extends React.Component {
     return (
       <section className="row">
         <div className="medium-4 columns">
-          {image}
+          <div className="centeredImage">{image}</div>
         </div>
         <div className="medium-8 columns">
-          <h1>{name}</h1>
           <div className="infocontent">
+            <h1>{name}</h1>
             <div className="summary" dangerouslySetInnerHTML={createMarkup(summary)}></div>
             <div className="hidden showtoggler" dangerouslySetInnerHTML={createMarkup(content)}></div>
             <div className="show" onClick={this.showMore.bind(this)}>Show more</div>
