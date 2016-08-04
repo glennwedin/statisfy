@@ -65,10 +65,13 @@ class TrackInfoComponent extends React.Component {
       listeners = this.props.artistortrack.info.listeners;
       count = this.props.artistortrack.info.playcount;
       artistname = this.props.artistortrack.info.artist.name;
-      album = this.props.artistortrack.info.album.title;
+      
+      if(this.props.artistortrack.info.album) {
+        album = this.props.artistortrack.info.album.title;
+      }
       if(this.props.artistortrack.info.wiki) {
-        summary = this.props.artistortrack.info.wiki.summary || '';
-        content = this.props.artistortrack.info.wiki.content || '';
+        summary = this.props.artistortrack.info.wiki.summary;
+        content = this.props.artistortrack.info.wiki.content;
       }
       //image = <img className="b50p" src={this.props.artistortrack.info.image[3]['#text']} alt="" />
       loading = this.props.artistortrack.info.isFetching;
@@ -85,6 +88,7 @@ class TrackInfoComponent extends React.Component {
         </div>
         <div className="medium-8 columns">
           <h1>{artistname} &ndash; {name}</h1>
+          <div>{album}</div>
           <div>{duration}</div>
           <div>Listeners: {listeners}</div>
           <div>Played: {count}</div>
