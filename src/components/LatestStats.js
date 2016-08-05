@@ -3,8 +3,13 @@ import { connect } from 'react-redux';
 import moment from 'moment';
 import { browserHistory } from 'react-router';
 import ReactListScroll from 'reactlistscroll';
+//import ReactListScroll from './scrolltest';
 
 class LatestStats extends React.Component {
+
+	constructor(props) {
+		super(props)
+	}
 
 	componentDidMount() {
 	}

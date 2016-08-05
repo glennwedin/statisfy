@@ -65,7 +65,7 @@ class TrackInfoComponent extends React.Component {
       listeners = this.props.artistortrack.info.listeners;
       count = this.props.artistortrack.info.playcount;
       artistname = this.props.artistortrack.info.artist.name;
-      
+
       if(this.props.artistortrack.info.album) {
         album = this.props.artistortrack.info.album.title;
       }

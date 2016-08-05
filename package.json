@@ -16,8 +16,8 @@
     "react": "^15.0.1",
     "react-dom": "^15.0.1",
     "react-redux": "^4.4.5",
-    "react-router": "^2.0.0-rc4",
-    "reactlistscroll": "^1.0.1-rc2",
+    "react-router": "^2.6.1",
+    "reactlistscroll": "^1.0.1-rc3",
     "redux": "^3.4.0",
     "redux-logger": "^2.6.1",
     "redux-thunk": "^2.0.1"

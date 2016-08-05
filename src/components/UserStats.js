@@ -2,8 +2,13 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { browserHistory } from 'react-router';
 import ReactListScroll from 'reactlistscroll';
+//import ReactListScroll from './scrolltest';
 
 class UserStats extends React.Component {
+
+	constructor(props){
+		super(props);
+	}
 
 	componentDidMount() {
 

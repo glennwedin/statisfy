@@ -28624,10 +28624,10 @@
 	  };
 	}
 
-	var CompiledPatternsCache = {};
+	var CompiledPatternsCache = Object.create(null);
 
 	function compilePattern(pattern) {
-	  if (!(pattern in CompiledPatternsCache)) CompiledPatternsCache[pattern] = _compilePattern(pattern);
+	  if (!CompiledPatternsCache[pattern]) CompiledPatternsCache[pattern] = _compilePattern(pattern);
 
 	  return CompiledPatternsCache[pattern];
 	}
@@ -30928,6 +30928,7 @@
 	}
 
 	//export default useRoutes
+
 	module.exports = exports['default'];
 
 /***/ },
@@ -64996,13 +64997,15 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+	//import ReactListScroll from './scrolltest';
+
 	var UserStats = function (_React$Component) {
 		_inherits(UserStats, _React$Component);
 
-		function UserStats() {
+		function UserStats(props) {
 			_classCallCheck(this, UserStats);
 
-			return _possibleConstructorReturn(this, Object.getPrototypeOf(UserStats).apply(this, arguments));
+			return _possibleConstructorReturn(this, Object.getPrototypeOf(UserStats).call(this, props));
 		}
 
 		_createClass(UserStats, [{
@@ -65231,17 +65234,23 @@
 							touchoffset: 0,
 							speed: props.speed || 6
 						};
-
-						_this.scroll = _this.scroll.bind(_this);
-						_this.releaseDragger = _this.releaseDragger.bind(_this);
 						return _this;
 					}
 
 					_createClass(ReactListScroll, [{
 						key: 'componentDidMount',
 						value: function componentDidMount() {
+							this.scroll = this.scroll.bind(this);
+							this.releaseDragger = this.releaseDragger.bind(this);
+
 							window.addEventListener('mouseup', this.releaseDragger);
 							window.addEventListener('touchend', this.releaseDragger);
+						}
+					}, {
+						key: 'componentWillUnmount',
+						value: function componentWillUnmount() {
+							window.removeEventListener('mouseup', this.releaseDragger);
+							window.removeEventListener('touchend', this.releaseDragger);
 						}
 					}, {
 						key: 'componentDidUpdate',
@@ -66219,13 +66228,15 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+	//import ReactListScroll from './scrolltest';
+
 	var LatestStats = function (_React$Component) {
 		_inherits(LatestStats, _React$Component);
 
-		function LatestStats() {
+		function LatestStats(props) {
 			_classCallCheck(this, LatestStats);
 
-			return _possibleConstructorReturn(this, Object.getPrototypeOf(LatestStats).apply(this, arguments));
+			return _possibleConstructorReturn(this, Object.getPrototypeOf(LatestStats).call(this, props));
 		}
 
 		_createClass(LatestStats, [{
@@ -76620,6 +76631,8 @@
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	//import ReactListScroll from './scrolltest';
 
 	var TopAlbums = function (_React$Component) {
 		_inherits(TopAlbums, _React$Component);

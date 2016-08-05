@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { browserHistory } from 'react-router';
 import ReactListScroll from 'reactlistscroll';
+//import ReactListScroll from './scrolltest';
 
 class TopAlbums extends React.Component {
 
